@@ -1,0 +1,14 @@
+#!/bin/bash
+#PBS -N quantileNormalization
+#PBS -q bigmem
+#PBS -l select=1:ncpus=1:mem=750gb,walltime=72:00:00
+#PBS -j oe
+ 
+ 
+cd ${PBS_O_WORKDIR}
+ 
+module load python
+module load anaconda
+pip
+
+python quantileNormalization.py
