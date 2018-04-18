@@ -1,0 +1,5 @@
+quantileNormalization.py performs Quantile Normalization on a GEM.
+
+Currently, the input file is "panTCGA-HTSEQ-GEM.txt.gz" and is specified in line 11 of quantileNormalization.py.  This file can be changed to the file containing the GEM which is being quantile normalized.
+
+quantileNormalization.pbs is also included.  This process can be submitted on Palmetto by typing "qsub quantileNormalization.pbs".
