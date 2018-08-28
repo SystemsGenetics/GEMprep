@@ -7,7 +7,7 @@ Check out NextFlow:  https://www.nextflow.io/
 PREPROCESS 
 (outlier_removal, normalize_quantile)  --- Benafsh has this code
 
-CLUSTER --- Iris/Willknow how to run tSNE
+CLUSTER --- Iris/Will know how to run tSNE.  This is Kim's code for tSNE/HDBSCAN:  https://github.com/feltus/tSNE_HDBSCAN
 (tSNE, OTHER CLUSTERING METHODS)
 
 VISUALIZE 
