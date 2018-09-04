@@ -1,24 +1,13 @@
 # GEM_PREP
 
-Hi Rachel.  This repo conatins code for preprocessing Gene Expression Matrices (GEMs).  Here are the eventual functionalities.  Let's get them working individually and then we can write a python wrapper or NextFlow workflow!
+This repo contains code for preprocessing Gene Expression Matrices (GEMs).  Included is a NextFlow workflow to act as a wrapper for the functionalities included in the following flowchart.
 
-Check out NextFlow:  https://www.nextflow.io/
-The GEMmaker worflow is built on NextFlow: https://github.com/SystemsGenetics/GEMmaker
+![image](https://user-images.githubusercontent.com/26093060/45060839-c2bfac80-b06f-11e8-8850-90a4bb0f9113.png)
 
- 
-PREPROCESS 
-(outlier_removal, normalize_quantile)  --- Benafsh has this code
-
-CLUSTER --- Iris/Will know how to run tSNE.  This is Kim's code for tSNE/HDBSCAN:  https://github.com/feltus/tSNE_HDBSCAN
-(tSNE, OTHER CLUSTERING METHODS)
-
-VISUALIZE 
-(heatmap, histogram - before/after preprocessing)
-
-REPORT
-(How many outliers removed; Average gene expression + stddev)
-
-SPLIT_INTO_SUBGEMS 
-(based on a sample list)
-
+**Prerequisites**
+Python2
+NextFlow
+Java v8
+R
+GEM
 
