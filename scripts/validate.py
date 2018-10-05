@@ -18,5 +18,6 @@ if __name__ == "__main__":
 	diff = abs(df_true - df_test)
 
 	# print stats
+	print("min error: %12.6f" % (diff.min().min()))
 	print("avg error: %12.6f" % (diff.sum().sum() / np.prod(diff.shape)))
 	print("max error: %12.6f" % (diff.max().max()))
