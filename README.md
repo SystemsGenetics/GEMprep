@@ -24,7 +24,7 @@ From here you can activate your environment and install any necessary packages f
 ```
 source activate myenv
 
-conda install matplotlib numpy pandas seaborn
+conda install matplotlib mpi4py numpy pandas scikit-learn seaborn
 conda install r
 
 source deactivate
