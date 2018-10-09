@@ -1,30 +1,56 @@
-# GEM_PREP
+# GEMprep
 
-The GEM_PREP repository contains code for preprocessing Gene Expression Matrices (GEMs).  Included is a NextFlow workflow to perform the functionalities included in the following flowchart.  The process receives a GEM as a .fpkm file, and returns a GEM that is ready for processing.
+This repository contains a variety of tools for gene expression matrices (GEMs). These tools include:
 
-The files in this repository are designed for use on Clemson University's Palmetto Cluster.  Included below is the Palmetto Cluster User Guide.
-https://www.palmetto.clemson.edu/palmetto/userguide_basic_usage.html
+- Normalization: log2 transform, KS-test outlier removal, quantile normalization
+- Visualization: t-SNE, sample distributions
+
+TODO: Included is a Nextflow workflow which provides a single interface through which to use the GEMprep tools:
 
 ![image](https://user-images.githubusercontent.com/26093060/45060839-c2bfac80-b06f-11e8-8850-90a4bb0f9113.png)
 
+This repository is designed for use on Clemson University's Palmetto Cluster. Documentation for the Palmetto Cluster can be found [here](https://www.palmetto.clemson.edu/palmetto/).
+
 ## Prerequisites
 
-Python2
-NextFlow
-Java v8
-R
-Anaconda
-Pandas
-GEM (Gene Expression Matrix)
+The recommended way to use the scripts in this repository is with an Anaconda environment. To create an Anaconda environment:
+```
+module add anaconda3/5.1.0
 
-## Visualize
+conda create -n myenv python=3.6
+```
+
+From here you can activate your environment and install any necessary packages for Python and R:
+```
+source activate myenv
+
+conda install matplotlib numpy pandas seaborn
+conda install r
+
+source deactivate
+```
+
+To use the Nextflow workflow, you must first install Nextflow:
+```
+module add java/1.8.0
+
+curl -s https://get.nextflow.io | bash
+
+./nextflow run hello
+```
+
+## Tools
+
+### Normalize
+
+To normalize an FPKM expression matrix, use the `normalize.R` script:
+```
+Rscript scripts/normalize.R
+```
+
+This script expects an input file called `FPKM.txt` and performs log2 transform, KS test outlier removal, and quantile normalization. It produces a normalized matrix file called `GEM.txt` as well as a log file of the KS test results and several visualizations.
+
+### Visualize
 
 TODO
 
-## Preprocess
-
-There are two options for preprocessing.  Preprocessing includes a log transform, outlier removal using the CDF test, quantile normalization, and the KS test.  The scripts are run in parallel or in series.
-  Series - This code includes all portions of the preprocessing section, meaning log transform, outlier removal using the CDF test, quantile normalization, and the KS test.
-   norm_series.py
-   norm_series.pbs
-  Parallel - This code includes the portions of the preprocessing section except quantile normalization, which is still in development.  Therefore, the parallel code include log transform, outlier removal using the CDF test, quantile normalization, and the KS test.
