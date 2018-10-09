@@ -23,7 +23,7 @@ if __name__ == "__main__":
 	print("Loaded %s %s" % (INFILE, str(df.shape)))
 
 	# save data matrix to binary file
-	np.save(OUTFILE_DATA, np.array(df.values, dtype=np.float32))
+	np.save(OUTFILE_DATA, np.array(df.values, dtype=np.float32, order="F"))
 
 	# save row names and column names to text files
 	np.savetxt(OUTFILE_ROWNAMES, df.index, fmt="%s")

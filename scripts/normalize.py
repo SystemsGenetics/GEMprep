@@ -19,32 +19,18 @@ def transform_log2(X):
 			X[:, i] = np.log2(X[:, i])
 
 	# gather columns
-	requests = []
-
 	for i in range(X.shape[1]):
-		source = i % size
-
-		if source == 0:
-			continue
-
-		if rank == 0:
-			requests.append(comm.Irecv(X[:, i], source=source))
-		elif rank == source:
-			requests.append(comm.Isend(X[:, i], dest=0))
-
-	for req in requests:
-		req.wait()
-
-	# broadcast transformed matrix
-	comm.Bcast(X, root=0)
+		root = i % size
+		comm.Bcast(X[:, i], root=root)
 
 
 
-def transform_kstest(X):
+def transform_kstest(X, keepna=False, threshold=0.15, logfile=None):
 	# extract global distribution
-	g = X.reshape(-1)
-	g = g[~np.isnan(g)]
-	g = scipy.stats.norm.cdf(g)
+	g = X.reshape(-1, order="F")
+	if not keepna:
+		g = g[~np.isnan(g)]
+	# g = scipy.stats.norm.cdf(g)
 
 	print("%d: extracted global distribution: %s" % (rank, str(g.shape)))
 
@@ -55,8 +41,9 @@ def transform_kstest(X):
 		if rank == i % size:
 			# extract column
 			x_i = X[:, i]
-			x_i = x_i[~np.isnan(x_i)]
-			x_i = scipy.stats.norm.cdf(x_i)
+			if not keepna:
+				x_i = x_i[~np.isnan(x_i)]
+			# x_i = scipy.stats.norm.cdf(x_i)
 
 			# perform K-S test between column and global distribution
 			d, p = scipy.stats.mstats.ks_twosamp(x_i, g)
@@ -67,14 +54,19 @@ def transform_kstest(X):
 	# gather results from K-S test
 	ks_results = comm.reduce(ks_results, op=MPI.SUM, root=0)
 
+	if rank != 0:
+		return None
+
+	# sort results by column index
+	ks_results.sort()
+
 	# save results to file
-	if rank == 0:
-		ks_results.sort()
+	if logfile != None:
+		file = open(logfile, "w")
+		file.write("\n".join([("%12.6f %12.6f" % (d, p)) for (_, d, p) in ks_results]))
 
-		file = open("ks-results.txt", "w")
-		file.write("\n".join([("%3d %8.3f %8.3f" % t) for t in ks_results]))
-
-	# TODO: remove outliers (d > 0.15)
+	# return mask of non-outliers
+	return [d < threshold for (_, d, p) in ks_results]
 
 
 
@@ -93,19 +85,24 @@ if __name__ == "__main__":
 	parser.add_argument("-o", "--output", required=True, help="output expression matrix", dest="OUTPUT")
 	parser.add_argument("--log2", action="store_true", help="whether to perform a log2 transform", dest="LOG2")
 	parser.add_argument("--kstest", action="store_true", help="whether to perform outlier removal using the K-S test", dest="KSTEST")
-	# TODO: --kstest-dropna
-	# TODO: --kstest-threshold
+	parser.add_argument("--ks-log", help="log file of K-S test results", dest="KS_LOG")
+	parser.add_argument("--ks-keepna", action="store_true", help="whether to keep nan's during K-S test", dest="KS_KEEPNA")
+	parser.add_argument("--ks-threshold", type=float, default=0.15, help="threshold for K-S test", dest="KS_THRESHOLD")
 	parser.add_argument("--quantile", action="store_true", help="whether to perform quantile normalization", dest="QUANTILE")
 
 	args = parser.parse_args()
 
-	# load input matrix into dataframe
-	emx = pd.read_table(args.INPUT, index_col=0, na_values=0)
+	# load input matrix as numpy array
+	X = np.load(args.INPUT)
+	X[X == 0] = np.nan
 
-	# extract column-major numpy array from dataframe
-	X = np.array(emx.values, order="F")
+	print("%d: loaded expression matrix: %s" % (rank, str(X.shape)))
 
-	print("%d: loaded expression matrix: %s" % (rank, str(emx.shape)))
+	# load row names and column names
+	BASENAME = ".".join(args.INPUT.split(".")[:-1])
+
+	rownames = np.loadtxt("%s_rownames.txt" % BASENAME, dtype=str)
+	colnames = np.loadtxt("%s_colnames.txt" % BASENAME, dtype=str)
 
 	# perform log2 transform
 	if args.LOG2:
@@ -113,13 +110,18 @@ if __name__ == "__main__":
 
 	# perform K-S test
 	if args.KSTEST:
-		transform_kstest(X)
+		mask = transform_kstest(X, keepna=args.KS_KEEPNA, threshold=args.KS_THRESHOLD, logfile=args.KS_LOG)
+
+		# remove outliers from FPKM matrix
+		if rank == 0:
+			X = X[:, mask]
+			colnames = colnames[mask]
 
 	# perform quantile normalization
 	if args.QUANTILE:
-		transform_quantile(X)
+		mask = transform_quantile(X)
 
 	# save output matrix
 	if rank == 0:
-		emx.iloc[:] = X
+		emx = pd.DataFrame(X, index=rownames, columns=colnames)
 		emx.to_csv(args.OUTPUT, sep="\t", na_rep="NA", float_format="%.8f")
