@@ -52,5 +52,9 @@ This script expects an input file called `FPKM.txt` and performs log2 transform,
 
 ### Visualize
 
-TODO
+To visualize the sample distributions of an expression matrix, use the `visualize.py` script:
+```
+python scripts/visualize.py -i [infile] -o [plotfile]
+```
 
+This script takes an expression matrix file (which may or may not be normalized) and plots the density of each sample in the matrix. For an unnormalized matrix, the sample distributions will vary greatly, but for a normalized matrix, the samples should have similar distributions.

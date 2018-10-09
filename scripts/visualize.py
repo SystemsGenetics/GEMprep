@@ -8,8 +8,7 @@ if __name__ == "__main__":
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-i", "--input", required=True, help="input expression matrix", dest="INPUT")
-	# TODO: --box-plot
-	# TODO: --dist
+	parser.add_argument("-o", "--output", default="dist.png", help="output plot file", dest="PLOTFILE")
 
 	args = parser.parse_args()
 
@@ -27,4 +26,4 @@ if __name__ == "__main__":
 	plt.xlim(emx.min().min(), emx.max().max())
 	plt.xlabel("Expression Level")
 	plt.ylabel("Density")
-	plt.savefig("dist.png")
+	plt.savefig(args.PLOTFILE)
