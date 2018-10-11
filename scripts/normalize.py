@@ -3,7 +3,6 @@ import mpi4py.MPI as MPI
 import numpy as np
 import pandas as pd
 import scipy.stats
-import sklearn.preprocessing
 
 # initialize MPI parameters
 comm = MPI.COMM_WORLD
@@ -71,10 +70,35 @@ def transform_kstest(X, keepna=False, threshold=0.15, logfile=None):
 
 
 def transform_quantile(X):
-	# TODO: review quantile_transform() documention
+	if rank != 0:
+		return
 
-	if rank == 0:
-		sklearn.preprocessing.quantile_transform(X, copy=False)
+	# compute map of nan values
+	X_isnan = np.isnan(X)
+
+	# convert nan values to zeros temporarily
+	X[X_isnan] = 0
+
+	# compute argsort of each column
+	X_argsort = np.empty_like(X, dtype=np.int32)
+
+	for i in range(X.shape[1]):
+		X_argsort[:, i] = np.argsort(X[:, i])
+
+	# compute mean of sorted columns
+	mean = np.zeros(X.shape[0], dtype=X.dtype)
+
+	for i in range(X.shape[1]):
+		mean += X[X_argsort[:, i], i]
+
+	mean /= X.shape[1]
+
+	# apply mean values to data
+	for i in range(X.shape[1]):
+		X[X_argsort[:, i], i] = mean
+
+	# recover nan values
+	X[X_isnan] = np.nan
 
 
 
@@ -119,7 +143,7 @@ if __name__ == "__main__":
 
 	# perform quantile normalization
 	if args.QUANTILE:
-		mask = transform_quantile(X)
+		transform_quantile(X)
 
 	# save output matrix
 	if rank == 0:
