@@ -41,6 +41,19 @@ curl -s https://get.nextflow.io | bash
 
 ## Tools
 
+### Plaintext and Binary formats
+
+The primary way to store an expression matrix in a file is as a tab-delimited text file which includes the row names and column names. The same matrix can also be stored as a binary Numpy (`.npy`) file, which includes only the data, and separate text files for the row names and column names. The scripts `text-to-bin.py` and `bin-to-text.py` can convert expression matrix files between these two formats:
+```
+# convert an expression matrix from plaintext to binary
+python scripts/text-to-bin.py GEM.txt
+
+# convert the binary matrix back to plaintext
+python scripts/bin-to-text.py GEM.npy
+```
+
+Some of the Python scripts in this repository require the input expression matrix in the binary format because it takes much less time to load into memory. Therefore, you may need to convert your expression matrix into binary before processing it with a Python script. Note that only some of the Python scripts have this requirement.
+
 ### Normalize
 
 To normalize an FPKM expression matrix, use the `normalize.R` script:
