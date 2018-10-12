@@ -1,0 +1,25 @@
+#!/bin/bash
+#PBS -N normalize
+#PBS -l select=1:ncpus=4:mem=16gb,walltime=72:00:00
+#PBS -j oe
+
+INFILE="data/TCGA_FPKM.txt"
+OUTDIR="results/TCGA"
+
+if [ $PBS_ENVIRONMENT = "PBS_BATCH" ]; then
+	module purge
+	module add anaconda3/5.1.0
+
+	cd $PBS_O_WORKDIR
+fi
+
+source activate myenv
+
+mkdir -p $OUTDIR
+cp $INFILE $OUTDIR/FPKM.txt
+
+cd $OUTDIR
+
+Rscript $OLDPWD/scripts/normalize.R
+
+source deactivate
