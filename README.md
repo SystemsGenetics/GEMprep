@@ -7,7 +7,7 @@ This repository contains a variety of tools for gene expression matrices (GEMs).
 
 TODO: Included is a Nextflow workflow which provides a single interface through which to use the GEMprep tools:
 
-<img src = "workflow_diagram.JPG" width = "100" >
+<img src = "workflow_diagram.JPG" width = "300" >
 ![](workflow_diagram.JPG)
 
 This repository is designed for use on Clemson University's Palmetto Cluster. Documentation for the Palmetto Cluster can be found [here](https://www.palmetto.clemson.edu/palmetto/).
