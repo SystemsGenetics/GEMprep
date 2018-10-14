@@ -56,7 +56,7 @@ for (i in 1:ncol(emx)) {
 }
 
 ksdf = data.frame(names(emx), unlist(ks_test))
-colnames(ksdf) = c('sample', 'ks_dvalue')
+colnames(ksdf) = c("sample", "d")
 row.names(ksdf) = c(1:ncol(emx))
 
 # remove the outlier samples (D > 0.15)

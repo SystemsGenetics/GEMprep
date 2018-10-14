@@ -24,7 +24,7 @@ def transform_log2(X):
 
 
 
-def transform_kstest(X, keepna=False, threshold=0.15, logfile=None):
+def transform_kstest(X, colnames, keepna=False, threshold=0.15, logfile=None):
 	# extract global distribution
 	g = X.reshape(-1, order="F")
 	if not keepna:
@@ -48,7 +48,7 @@ def transform_kstest(X, keepna=False, threshold=0.15, logfile=None):
 			d, p = scipy.stats.mstats.ks_twosamp(x_i, g)
 
 			# save results
-			ks_results.append((i, d, p))
+			ks_results.append((i, colnames[i], d, p))
 
 	# gather results from K-S test
 	ks_results = comm.reduce(ks_results, op=MPI.SUM, root=0)
@@ -61,11 +61,12 @@ def transform_kstest(X, keepna=False, threshold=0.15, logfile=None):
 
 	# save results to file
 	if logfile != None:
-		file = open(logfile, "w")
-		file.write("\n".join([("%12.6f %12.6f" % (d, p)) for (_, d, p) in ks_results]))
+		f = open(logfile, "w")
+		f.write("%s\t%s\t%s\n" % ("sample", "d", "p"))
+		f.write("\n".join([("%s\t%.6f\t%.6f" % (colname, d, p)) for (_, colname, d, p) in ks_results]))
 
 	# return mask of non-outliers
-	return [d < threshold for (_, d, p) in ks_results]
+	return [d < threshold for (_, _, d, p) in ks_results]
 
 
 
@@ -130,11 +131,15 @@ if __name__ == "__main__":
 
 	# perform log2 transform
 	if args.LOG2:
+		print("Performing log2 transform...")
+
 		transform_log2(X)
 
 	# perform K-S test
 	if args.KSTEST:
-		mask = transform_kstest(X, keepna=args.KS_KEEPNA, threshold=args.KS_THRESHOLD, logfile=args.KS_LOG)
+		print("Performing K-S test and outlier removal...")
+
+		mask = transform_kstest(X, colnames, keepna=args.KS_KEEPNA, threshold=args.KS_THRESHOLD, logfile=args.KS_LOG)
 
 		# remove outliers from FPKM matrix
 		if rank == 0:
@@ -143,9 +148,13 @@ if __name__ == "__main__":
 
 	# perform quantile normalization
 	if args.QUANTILE:
+		print("Performing quantile normalization...")
+
 		transform_quantile(X)
 
 	# save output matrix
 	if rank == 0:
+		print("Saving output expression matrix...")
+
 		emx = pd.DataFrame(X, index=rownames, columns=colnames)
 		emx.to_csv(args.OUTPUT, sep="\t", na_rep="NA", float_format="%.8f")
