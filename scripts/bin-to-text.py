@@ -30,6 +30,6 @@ if __name__ == "__main__":
 	df = pd.DataFrame(X, index=rownames, columns=colnames)
 
 	# save dataframe
-	df.to_csv(OUTFILE, sep="\t")
+	df.to_csv(OUTFILE, sep="\t", na_rep="NA", float_format="%.8f")
 
 	print("Saved %s" % OUTFILE)

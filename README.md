@@ -7,8 +7,7 @@ This repository contains a variety of tools for gene expression matrices (GEMs).
 
 TODO: Included is a Nextflow workflow which provides a single interface through which to use the GEMprep tools:
 
-<img src = "workflow_diagram.JPG" width = "300" >
-![](workflow_diagram.JPG)
+<img src="workflow_diagram.JPG" width="300"/>
 
 This repository is designed for use on Clemson University's Palmetto Cluster. Documentation for the Palmetto Cluster can be found [here](https://www.palmetto.clemson.edu/palmetto/).
 
@@ -72,3 +71,16 @@ python scripts/visualize.py -i [infile] -o [plotfile]
 ```
 
 This script takes an expression matrix file (which may or may not be normalized) and plots the density of each sample in the matrix. For an unnormalized matrix, the sample distributions will vary greatly, but for a normalized matrix, the samples should have similar distributions.
+
+### Partitioning
+
+To partition an expression matrix into several sub-matrices, use the `partition.py` script:
+```
+# use a pre-defined partition file
+python scripts/partition.py -i [infile] -p [partition-file]
+
+# use an automatic partitioning scheme with N partitions
+python scripts/partition.py -i [infile] -n N
+```
+
+This script takes an expression matrix and creates several submatrices based on a partitioning scheme. You can either provide a custom partition file or use the script to automatically generate partitions. The partition file should have two columns, the first column being sample names and the second column being partition labels. When generating partitions automatically, the script will output the resulting partition file, which you can modify to create your own partition files. Run with `-h` to see the list of available options.
