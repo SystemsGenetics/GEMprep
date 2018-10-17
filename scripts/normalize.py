@@ -77,22 +77,28 @@ def transform_quantile(X):
 	# compute map of nan values
 	X_isnan = np.isnan(X)
 
-	# convert nan values to zeros temporarily
-	X[X_isnan] = 0
-
 	# compute argsort of each column
 	X_argsort = np.empty_like(X, dtype=np.int32)
 
 	for i in range(X.shape[1]):
 		X_argsort[:, i] = np.argsort(X[:, i])
 
+	# convert nan values to zeros temporarily
+	X[X_isnan] = 0
+
 	# compute mean of sorted columns
+	# equivalent to np.nanmean(X_sorted, axis=1)
 	mean = np.zeros(X.shape[0], dtype=X.dtype)
+	counts = np.zeros(X.shape[0], dtype=np.int32)
 
 	for i in range(X.shape[1]):
 		mean += X[X_argsort[:, i], i]
+		counts += ~X_isnan[X_argsort[:, i], i]
 
-	mean /= X.shape[1]
+	# replace 0 counts with 1 to prevent numerical issues
+	counts[counts == 0] = 1
+
+	mean /= counts
 
 	# apply mean values to data
 	for i in range(X.shape[1]):
@@ -121,7 +127,8 @@ if __name__ == "__main__":
 	X = np.load(args.INPUT)
 	X[X == 0] = np.nan
 
-	print("%d: loaded expression matrix: %s" % (rank, str(X.shape)))
+	if rank == 0:
+		print("%d: loaded expression matrix: %s" % (rank, str(X.shape)))
 
 	# load row names and column names
 	BASENAME = ".".join(args.INPUT.split(".")[:-1])
@@ -131,13 +138,15 @@ if __name__ == "__main__":
 
 	# perform log2 transform
 	if args.LOG2:
-		print("Performing log2 transform...")
+		if rank == 0:
+			print("Performing log2 transform...")
 
 		transform_log2(X)
 
 	# perform K-S test
 	if args.KSTEST:
-		print("Performing K-S test and outlier removal...")
+		if rank == 0:
+			print("Performing K-S test and outlier removal...")
 
 		mask = transform_kstest(X, colnames, keepna=args.KS_KEEPNA, threshold=args.KS_THRESHOLD, logfile=args.KS_LOG)
 
@@ -148,7 +157,8 @@ if __name__ == "__main__":
 
 	# perform quantile normalization
 	if args.QUANTILE:
-		print("Performing quantile normalization...")
+		if rank == 0:
+			print("Performing quantile normalization...")
 
 		transform_quantile(X)
 

@@ -8,7 +8,7 @@ if __name__ == "__main__":
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-i", "--input", required=True, help="input expression matrix", dest="INPUT")
-	parser.add_argument("-o", "--output", default="dist.png", help="output plot file", dest="PLOTFILE")
+	parser.add_argument("-o", "--output", default="density.png", help="output plot file", dest="PLOTFILE")
 
 	args = parser.parse_args()
 
