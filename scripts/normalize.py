@@ -15,7 +15,9 @@ def transform_log2(X):
 	# transform each column
 	for i in range(X.shape[1]):
 		if rank == i % size:
-			X[:, i] = np.log2(X[:, i])
+			X_i = X[:, i]
+			X_i[X_i == 0] = np.nan
+			X_i[:] = np.log2(X_i)
 
 	# gather columns
 	for i in range(X.shape[1]):
@@ -125,7 +127,6 @@ if __name__ == "__main__":
 
 	# load input matrix as numpy array
 	X = np.load(args.INPUT)
-	X[X == 0] = np.nan
 
 	if rank == 0:
 		print("%d: loaded expression matrix: %s" % (rank, str(X.shape)))
