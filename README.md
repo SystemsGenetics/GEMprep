@@ -65,12 +65,17 @@ This script expects an input file called `FPKM.txt` and performs log2 transform,
 
 ### Visualize
 
-To visualize the sample distributions of an expression matrix, use the `visualize.py` script:
+To create visualizations of an expression matrix, use the `visualize.py` script:
 ```
-python scripts/visualize.py -i [infile] -o [plotfile]
+python scripts/visualize.py -i [infile] [options]
 ```
 
-This script takes an expression matrix file (which may or may not be normalized) and plots the density of each sample in the matrix. For an unnormalized matrix, the sample distributions will vary greatly, but for a normalized matrix, the samples should have similar distributions.
+This script takes an expression matrix file (which may or may not be normalized) and creates several visualizations based on the command line arguments that you provide. Currently this script supports two visualizations:
+
+- Density plot: plot the distribution of each sample
+- t-SNE plot: plot the t-SNE of all samples
+
+For an unnormalized matrix, the sample distributions will vary greatly, but for a normalized matrix, the samples should have similar distributions. For the t-SNE plot, a label file can be provided to color the data points by their respective label. The file should contain a label for each sample, separated by newlines. The labels can be text or numeric.
 
 ### Partitioning
 
