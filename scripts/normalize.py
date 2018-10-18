@@ -72,7 +72,7 @@ def transform_kstest(X, colnames, keepna=False, threshold=0.15, logfile=None):
 
 
 
-def transform_quantile(X):
+def transform_quantile(X, nanmean=False):
 	if rank != 0:
 		return
 
@@ -89,18 +89,26 @@ def transform_quantile(X):
 	X[X_isnan] = 0
 
 	# compute mean of sorted columns
-	# equivalent to np.nanmean(X_sorted, axis=1)
 	mean = np.zeros(X.shape[0], dtype=X.dtype)
-	counts = np.zeros(X.shape[0], dtype=np.int32)
 
 	for i in range(X.shape[1]):
 		mean += X[X_argsort[:, i], i]
-		counts += ~X_isnan[X_argsort[:, i], i]
 
-	# replace 0 counts with 1 to prevent numerical issues
-	counts[counts == 0] = 1
+	if nanmean:
+		# compute number of values in each row
+		counts = np.zeros(X.shape[0], dtype=np.int32)
 
-	mean /= counts
+		for i in range(X.shape[1]):
+			counts += ~X_isnan[X_argsort[:, i], i]
+
+		# replace 0 counts with 1 to prevent numerical issues
+		counts[counts == 0] = 1
+
+		# compute mean by excluding nan values
+		mean /= counts
+	else:
+		# compute mean by including nan values
+		mean /= X.shape[1]
 
 	# apply mean values to data
 	for i in range(X.shape[1]):
