@@ -16,6 +16,8 @@ if __name__ == "__main__":
 	emx = emx.values
 
 	# print global stats
+	print("shape: %s" % str(emx.shape))
+
 	print("global:")
 	print("  min: %12.6f" % (np.nanmin(emx)))
 	print("  avg: %12.6f" % (np.nanmean(emx)))

@@ -9,7 +9,14 @@ import sklearn.manifold
 
 
 
-def plot_density(X, filename):
+def plot_density(X, filename, xmin=None, xmax=None):
+	# compute x-axis limits if not provided
+	if xmin == None:
+		xmin = np.nanmin(X)
+
+	if xmax == None:
+		xmax = np.nanmax(X)
+
 	# plot the KDE of each sample
 	_, ax = plt.subplots(figsize=(10, 10))
 
@@ -18,14 +25,14 @@ def plot_density(X, filename):
 		sns.distplot(X_i, hist=False, ax=ax)
 
 	plt.title("Sample Distributions")
-	plt.xlim(X.min().min(), X.max().max())
 	plt.xlabel("Expression Level")
 	plt.ylabel("Density")
+	plt.xlim(xmin, xmax)
 	plt.savefig(filename)
 
 
 
-def plot_tsne(X, y, filename, na_value=-1e3, n_pca=None):
+def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None):
 	# fill missing values with a representative value
 	X = X.fillna(na_value)
 
@@ -65,7 +72,10 @@ if __name__ == "__main__":
 	parser.add_argument("-i", "--input", required=True, help="input expression matrix", dest="INPUT")
 	parser.add_argument("--labels", help="text file of sample labels", dest="LABELS")
 	parser.add_argument("--density", help="save density plot to the given filename", dest="DENSITY")
+	parser.add_argument("--density-xmax", type=float, help="upper bound of x-axis", dest="DENSITY_XMAX")
 	parser.add_argument("--tsne", help="save t-SNE plot to the given filename", dest="TSNE")
+	parser.add_argument("--tsne-na", type=float, default=-1e3, help="numerical value to use for missing values", dest="NA_VALUE")
+	parser.add_argument("--tsne-npca", type=int, help="number of principal components to take before t-SNE", dest="N_PCA")
 
 	args = parser.parse_args()
 
@@ -86,10 +96,10 @@ if __name__ == "__main__":
 	if args.DENSITY != None:
 		print("Plotting sample distributions...")
 
-		plot_density(emx, args.DENSITY)
+		plot_density(emx, args.DENSITY, xmax=args.DENSITY_XMAX)
 
 	# plot t-SNE of samples
 	if args.TSNE != None:
 		print("Plotting 2-D t-SNE...")
 
-		plot_tsne(emx, labels, args.TSNE)
+		plot_tsne(emx, labels, args.TSNE, na_value=args.NA_VALUE, n_pca=args.N_PCA)
