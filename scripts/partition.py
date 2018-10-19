@@ -1,4 +1,5 @@
 import argparse
+import dataframe_helper
 import pandas as pd
 import random
 import sys
@@ -15,12 +16,12 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	# determine basename for output files
-	BASENAME = ".".join(args.INPUT.split(".")[:-1])
+	basename, _ = dataframe_helper.split_filename(args.INPUT)
 
 	# load input expression matrix
 	print("Loading expression matrix...")
 
-	emx = pd.read_table(args.INPUT, index_col=0)
+	emx = dataframe_helper.load(args.INPUT)
 
 	# load or generate partition labels
 	if args.PARTITIONS != None:
@@ -55,7 +56,7 @@ if __name__ == "__main__":
 
 	for p in partitions:
 		# compute output name
-		outname = "%s.%s.txt" % (BASENAME, p)
+		outname = "%s.%s.txt" % (basename, p)
 
 		print("Saving %s..." % (outname))
 
@@ -64,4 +65,4 @@ if __name__ == "__main__":
 		submatrix = emx[samples]
 
 		# save submatrix
-		submatrix.to_csv(outname, sep="\t", na_rep="NA", float_format="%.8f")
+		dataframe_helper.save(outname, submatrix)

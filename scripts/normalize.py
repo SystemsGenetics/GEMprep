@@ -1,4 +1,5 @@
 import argparse
+import dataframe_helper
 import mpi4py.MPI as MPI
 import numpy as np
 import pandas as pd
@@ -133,17 +134,16 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
-	# load input matrix as numpy array
-	X = np.load(args.INPUT)
-
+	# load input expression matrix
 	if rank == 0:
-		print("%d: loaded expression matrix: %s" % (rank, str(X.shape)))
+		print("Loading input expression matrix...")
 
-	# load row names and column names
-	BASENAME = ".".join(args.INPUT.split(".")[:-1])
+	emx = dataframe_helper.load(args.INPUT)
 
-	rownames = np.loadtxt("%s_rownames.txt" % BASENAME, dtype=str)
-	colnames = np.loadtxt("%s_colnames.txt" % BASENAME, dtype=str)
+	# decompose dataframe into data, row names, and column names
+	X = emx.values
+	rownames = emx.index
+	colnames = emx.columns
 
 	# perform log2 transform
 	if args.LOG2:
@@ -176,4 +176,4 @@ if __name__ == "__main__":
 		print("Saving output expression matrix...")
 
 		emx = pd.DataFrame(X, index=rownames, columns=colnames)
-		emx.to_csv(args.OUTPUT, sep="\t", na_rep="NA", float_format="%.8f")
+		dataframe_helper.save(args.OUTPUT, emx)

@@ -1,4 +1,5 @@
 import argparse
+import dataframe_helper
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -26,18 +27,18 @@ def plot_density(X, filename):
 
 def plot_tsne(X, y, filename, na_value=-1e3, n_pca=None):
 	# fill missing values with a representative value
-	X = X.T
 	X = X.fillna(na_value)
 
 	# perform PCA for dimensionality reduction
 	print("  Computing PCA decomposition...")
 
+	X = X.T
 	X_pca = sklearn.decomposition.PCA(n_components=n_pca, copy=False).fit_transform(X)
 
 	# compute t-SNE from the PCA projection
 	print("  Computing t-SNE...")
 
-	X_tsne = sklearn.manifold.TSNE(n_components=2).fit_transform(X)
+	X_tsne = sklearn.manifold.TSNE(n_components=2).fit_transform(X_pca)
 
 	# plot the 2-D embedding
 	plt.axis("off")
@@ -69,7 +70,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	# load input expression matrix
-	emx = pd.read_table(args.INPUT, index_col=0)
+	emx = dataframe_helper.load(args.INPUT)
 
 	print("Loaded %s %s" % (args.INPUT, str(emx.shape)))
 

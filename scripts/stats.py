@@ -1,3 +1,4 @@
+import dataframe_helper
 import numpy as np
 import pandas as pd
 import sys
@@ -11,15 +12,19 @@ if __name__ == "__main__":
 	INFILE = sys.argv[1]
 
 	# load input data
-	emx = pd.read_table(INFILE, index_col=0)
+	emx = dataframe_helper.load(INFILE)
 	emx = emx.values
 
-	# print stats
-	print("min: %12.6f" % (np.nanmin(emx)))
-	print("avg: %12.6f" % (np.nanmean(emx)))
-	print("max: %12.6f" % (np.nanmax(emx)))
+	# print global stats
+	print("global:")
+	print("  min: %12.6f" % (np.nanmin(emx)))
+	print("  avg: %12.6f" % (np.nanmean(emx)))
+	print("  max: %12.6f" % (np.nanmax(emx)))
 
-	# compute column means
+	# print column-wise stats
 	colmeans = np.nanmean(emx, axis=0)
 
-	print("column mean: %.6f +/- %.6f" % (colmeans.mean(), colmeans.std()))
+	print("column-wise mean:")
+	print("  min: %12.6f" % (np.nanmin(colmeans)))
+	print("  avg: %12.6f" % (np.nanmean(colmeans)))
+	print("  max: %12.6f" % (np.nanmax(colmeans)))
