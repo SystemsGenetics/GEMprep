@@ -17,6 +17,12 @@ fi
 
 source activate myenv
 
-mpirun -np $NP python scripts/normalize.py -i $INFILE -o $OUTFILE --log2 --kstest --ks-log $LOGFILE --quantile
+mpirun -np $NP python scripts/normalize.py \
+	--input $INFILE \
+	--output $OUTFILE \
+	--log2 \
+	--kstest \
+	--ks-log $LOGFILE \
+	--quantile
 
 source deactivate

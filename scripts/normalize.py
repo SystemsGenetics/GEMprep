@@ -161,6 +161,8 @@ if __name__ == "__main__":
 
 		# remove outliers from FPKM matrix
 		if rank == 0:
+			print("Preserved %d / %d samples after outlier removal..." % (sum(mask), len(mask)))
+
 			X = X[:, mask]
 			colnames = colnames[mask]
 
