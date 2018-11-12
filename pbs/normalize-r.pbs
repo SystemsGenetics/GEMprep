@@ -20,6 +20,6 @@ cp $INFILE $OUTDIR/FPKM.txt
 
 cd $OUTDIR
 
-Rscript $OLDPWD/scripts/normalize.R
+Rscript $OLDPWD/scripts/normalize.R --log2 --kstest --quantile
 
 source deactivate
