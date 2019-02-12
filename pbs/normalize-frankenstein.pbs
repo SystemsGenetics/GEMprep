@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -N normalize
+#PBS -l select=100:ncpus=1:mpiprocs=1:mem=16gb:interconnect=fdr,walltime=72:00:00
+#PBS -j oe
+
+INFILE="data/TCGA_FPKM.npy"
+OUTFILE="TCGA_GEM.txt"
+LOGFILE="TCGA-ks-results.txt"
+NP=$(cat $PBS_NODEFILE | wc -l)
+
+if [ $PBS_ENVIRONMENT = "PBS_BATCH" ]; then
+	module purge
+	module add anaconda3/5.1.0
+
+	cd $PBS_O_WORKDIR
+fi
+
+source activate myenv
+
+# perform log2 and kstest step in Python
+mpirun -np $NP python scripts/normalize.py \
+	--input $INFILE \
+	--output $OUTFILE \
+	--log2 \
+	--kstest \
+	--ks-log $LOGFILE
+
+# perform quantile step in R
+mv $OUTFILE FPKM.txt
+Rscript scripts/normalize.R --quantile
+mv GEM.txt $OUTFILE
+
+source deactivate
