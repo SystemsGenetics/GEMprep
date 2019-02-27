@@ -5,7 +5,7 @@ This repository contains a variety of tools for gene expression matrices (GEMs).
 - Normalization: log2 transform, KS-test outlier removal, quantile normalization
 - Visualization: t-SNE, sample distributions
 
-TODO: Included is a Nextflow workflow which provides a single interface through which to use the GEMprep tools:
+Included is a Nextflow workflow which provides a single interface through which to use the GEMprep tools:
 
 <img src="images/workflow-diagram.jpg" width="300"/>
 
@@ -38,6 +38,21 @@ curl -s https://get.nextflow.io | bash
 
 ./nextflow run hello
 ```
+
+## Nextflow
+
+The Nextflow script runs all portions of the preprocessing.  After completing the prerequisites, the following steps need to be taken to run preprocessing through Nextflow.
+
+The included nextflow.config file defaults to finding files in the current directory.  It requires the GEM_PREP.nf, nextflow.config, the scripts/ folder, and the input GEM to be in the same directory.
+
+The nextflow.config files must be altered in order to change this.  In each file name with a different location, replace ${PWD} with the path to the desired directory.
+
+In the directory, type the following to run the Nextflow script:
+```
+nextflow run GEM_PREP.nf --inputName <input GEM filename>
+```
+
+Performance details will be placed in the work/ directory within the current directory.
 
 ## Tools
 
