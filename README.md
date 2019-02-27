@@ -41,7 +41,7 @@ curl -s https://get.nextflow.io | bash
 
 ## Nextflow
 
-The Nextflow script runs all portions of the preprocessing.  After completing the prerequisites, the following steps need to be taken to run preprocessing through Nextflow.
+The Nextflow script runs normalize.py and the associated scripts.  After completing the prerequisites, the following steps need to be taken to run preprocessing through Nextflow.
 
 The included nextflow.config file defaults to finding files in the current directory.  It requires the GEM_PREP.nf, nextflow.config, the scripts/ folder, and the input GEM to be in the same directory.
 
