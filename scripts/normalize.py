@@ -12,13 +12,13 @@ size = comm.Get_size()
 
 
 
-def transform_log2(X):
+def transform_log2(X, alpha=0):
 	# transform each column
 	for i in range(X.shape[1]):
 		if rank == i % size:
 			X_i = X[:, i]
 			X_i[X_i == 0] = np.nan
-			X_i[:] = np.log2(X_i)
+			X_i[:] = np.log2(alpha + X_i)
 
 	# gather columns
 	for i in range(X.shape[1]):
@@ -126,6 +126,7 @@ if __name__ == "__main__":
 	parser.add_argument("-i", "--input", required=True, help="input expression matrix", dest="INPUT")
 	parser.add_argument("-o", "--output", required=True, help="output expression matrix", dest="OUTPUT")
 	parser.add_argument("--log2", action="store_true", help="whether to perform a log2 transform", dest="LOG2")
+	parser.add_argument("--log2-alpha", type=float, default=0, help="alpha value in log2 transform: x -> log2(alpha + x)", dest="LOG2_ALPHA")
 	parser.add_argument("--kstest", action="store_true", help="whether to perform outlier removal using the K-S test", dest="KSTEST")
 	parser.add_argument("--ks-log", help="log file of K-S test results", dest="KS_LOG")
 	parser.add_argument("--ks-keepna", action="store_true", help="whether to keep nan's during K-S test", dest="KS_KEEPNA")
@@ -150,7 +151,7 @@ if __name__ == "__main__":
 		if rank == 0:
 			print("Performing log2 transform...")
 
-		transform_log2(X)
+		transform_log2(X, alpha=args.LOG2_ALPHA)
 
 	# perform K-S test
 	if args.KSTEST:
