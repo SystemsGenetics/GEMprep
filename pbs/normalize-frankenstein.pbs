@@ -18,7 +18,7 @@ fi
 source activate myenv
 
 # perform log2 and kstest step in Python
-mpirun -np $NP python scripts/normalize.py \
+mpirun -np $NP python bin/normalize.py \
 	--input $INFILE \
 	--output $OUTFILE \
 	--log2 \
@@ -27,7 +27,7 @@ mpirun -np $NP python scripts/normalize.py \
 
 # perform quantile step in R
 mv $OUTFILE FPKM.txt
-Rscript scripts/normalize.R --quantile
+Rscript bin/normalize.R --quantile
 mv GEM.txt $OUTFILE
 
 source deactivate

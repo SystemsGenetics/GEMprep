@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N normalize
+#PBS -N normalize-r
 #PBS -l select=1:ncpus=4:mem=16gb,walltime=72:00:00
 #PBS -j oe
 
@@ -20,6 +20,6 @@ cp $INFILE $OUTDIR/FPKM.txt
 
 cd $OUTDIR
 
-Rscript $OLDPWD/scripts/normalize.R --log2 --kstest --quantile
+Rscript $OLDPWD/bin/normalize.R --log2 --kstest --quantile
 
 source deactivate

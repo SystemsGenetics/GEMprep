@@ -43,13 +43,13 @@ curl -s https://get.nextflow.io | bash
 
 The Nextflow script runs the processes within Normalization.  This uses the normalization.py file.  After completing the prerequisites, the following steps need to be taken to run preprocessing through Nextflow.
 
-The included nextflow.config file defaults to finding files in the current directory.  It requires the GEM_PREP.nf, nextflow.config, the scripts/ folder, and the input GEM to be in the same directory.
+The included nextflow.config file defaults to finding files in the current directory.  It requires the main.nf, nextflow.config, the bin/ folder, and the input GEM to be in the same directory.
 
 The nextflow.config files must be altered in order to change this.  In each file name with a different location, replace ${PWD} with the path to the desired directory.
 
 In the directory, type the following to run the Nextflow script:
 ```
-nextflow run GEM_PREP.nf --inputName <input GEM filename>
+nextflow run main.nf --inputName <input GEM filename>
 ```
 
 Performance details will be placed in the work/ directory within the current directory.
@@ -61,10 +61,10 @@ Performance details will be placed in the work/ directory within the current dir
 The primary way to store an expression matrix in a file is as a tab-delimited text file which includes the row names and column names. The same matrix can also be stored as a binary Numpy (`.npy`) file, which includes only the data, and separate text files for the row names and column names. The script `convert.py` can convert expression matrix files between these two formats:
 ```
 # convert an expression matrix from plaintext to binary
-python scripts/convert.py GEM.txt
+python bin/convert.py GEM.txt
 
 # convert the binary matrix back to plaintext
-python scripts/convert.py GEM.npy
+python bin/convert.py GEM.npy
 ```
 
 Every Python script in this repository can load and save expression matrices using either format, depending on whether you provide `txt` or `npy` file arguments.
@@ -73,7 +73,7 @@ Every Python script in this repository can load and save expression matrices usi
 
 To normalize an FPKM expression matrix, use the `normalize.R` script:
 ```
-Rscript scripts/normalize.R
+Rscript bin/normalize.R
 ```
 
 This script expects an input file called `FPKM.txt` and performs log2 transform, KS test outlier removal, and quantile normalization. It produces a normalized matrix file called `GEM.txt` as well as a log file of the KS test results and several visualizations.
@@ -82,7 +82,7 @@ This script expects an input file called `FPKM.txt` and performs log2 transform,
 
 To create visualizations of an expression matrix, use the `visualize.py` script:
 ```
-python scripts/visualize.py -i [infile] [options]
+python bin/visualize.py -i [infile] [options]
 ```
 
 This script takes an expression matrix file (which may or may not be normalized) and creates several visualizations based on the command line arguments that you provide. Currently this script supports two visualizations:
@@ -97,10 +97,10 @@ For an unnormalized matrix, the sample distributions will vary greatly, but for 
 To partition an expression matrix into several sub-matrices, use the `partition.py` script:
 ```
 # use a pre-defined partition file
-python scripts/partition.py -i [infile] -p [partition-file]
+python bin/partition.py -i [infile] -p [partition-file]
 
 # use an automatic partitioning scheme with N partitions
-python scripts/partition.py -i [infile] -n N
+python bin/partition.py -i [infile] -n N
 ```
 
 This script takes an expression matrix and creates several submatrices based on a partitioning scheme. You can either provide a custom partition file or use the script to automatically generate partitions. The partition file should have two columns, the first column being sample names and the second column being partition labels. When generating partitions automatically, the script will output the resulting partition file, which you can modify to create your own partition files. Run with `-h` to see the list of available options.

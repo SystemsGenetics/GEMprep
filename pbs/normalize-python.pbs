@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N normalize
+#PBS -N normalize-python
 #PBS -l select=100:ncpus=1:mpiprocs=1:mem=16gb:interconnect=fdr,walltime=72:00:00
 #PBS -j oe
 
@@ -17,7 +17,7 @@ fi
 
 source activate myenv
 
-mpirun -np $NP python scripts/normalize.py \
+mpirun -np $NP python bin/normalize.py \
 	--input $INFILE \
 	--output $OUTFILE \
 	--log2 \
