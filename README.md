@@ -5,7 +5,7 @@ This repository contains a variety of tools for gene expression matrices (GEMs).
 - Normalization: log2 transform, KS-test outlier removal, quantile normalization
 - Visualization: t-SNE, sample distributions
 
-Included is a Nextflow workflow which provides a single interface through which to use the GEMprep tools:
+Included is a Nextflow pipeline which provides a single interface through which to use the GEMprep tools:
 
 <img src="images/workflow-diagram.jpg" width="300"/>
 
@@ -17,20 +17,10 @@ The recommended way to use the scripts in this repository is with an Anaconda en
 ```
 module add anaconda3/5.1.0
 
-conda create -n myenv python=3.6
+conda create -n myenv python=3.6 matplotlib mpi4py numpy pandas r scikit-learn seaborn
 ```
 
-From here you can activate your environment and install any necessary packages for Python and R:
-```
-source activate myenv
-
-conda install matplotlib mpi4py numpy pandas scikit-learn seaborn
-conda install r
-
-source deactivate
-```
-
-To use the Nextflow workflow, you must first install Nextflow:
+To use the Nextflow pipeline, you must first install Nextflow:
 ```
 module add java/1.8.0
 
@@ -41,18 +31,16 @@ curl -s https://get.nextflow.io | bash
 
 ## Nextflow
 
-The Nextflow script runs the processes within Normalization.  This uses the normalization.py file.  After completing the prerequisites, the following steps need to be taken to run preprocessing through Nextflow.
+The Nextflow pipeline can run several tools on a set of GEM files in a single run using the scripts in the `bin` folder. By default, the pipeline uses all GEM files in the `input` directory, runs all steps that are enabled in `nextflow.config`, and saves all results to the `output` folder. There are several settings, such as the directory to your conda environment and the steps to run, which can be found in the `params` section of `nextflow.config`. These settings can be modified to fit the user's needs.
 
-The included nextflow.config file defaults to finding files in the current directory.  It requires the main.nf, nextflow.config, the bin/ folder, and the input GEM to be in the same directory.
-
-The nextflow.config files must be altered in order to change this.  In each file name with a different location, replace ${PWD} with the path to the desired directory.
-
-In the directory, type the following to run the Nextflow script:
+To run the Nextflow pipeline:
 ```
-nextflow run main.nf --inputName <input GEM filename>
-```
+# place input files in the input directory
+mkdir input
+# ...
 
-Performance details will be placed in the work/ directory within the current directory.
+nextflow run main.nf
+```
 
 ## Tools
 
