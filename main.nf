@@ -1,35 +1,35 @@
-#!/home/reimen/bin nextflow
+#!/usr/bin/env nextflow
 
-process pbs {
 
-        publishDir '/scratch2/reimen/nextflowTests/pbs/direct/gemPrepDirect'
 
-        executor "pbs"
+/**
+ * Create channel for input files.
+ */
+INPUT_FILES = Channel.fromFilePairs("${params.input_dir}/*_FPKM.txt", size: 1, flat: true)
 
-        tag { normalize }
 
-        conda "/home/reimen/.conda/envs/myenv"
 
-        module 'purge'
-        module 'anaconda3/5.1.0'
-        module 'gcc/7.1.0 openmpi/1.8.4 pgi/2016'
+process normalize {
+	tag "${dataset}"
+	publishDir "${params.output_dir}/${dataset}"
 
-        """
-                INFILE=$params.pbs.input.inputGEM
-                OUTFILE=$params.pbs.output.outputGEM
-              	LOGFILE=$params.pbs.output.outputKS
+	input:
+		set val(dataset), file(input_file) from INPUT_FILES
 
-                        cd /scratch2/reimen/nextflowTests/pbs/direct/gemPrepDirect
+	output:
+		set val(dataset), file("${dataset}_GEM.txt")
 
-                
-                python $params.pbs.input.normalizeScript \
-                        --input \$INFILE \
-                        --output \$OUTFILE \
-                        --log2 \
-                        --kstest \
-                        --ks-log \$LOGFILE \
-                        --quantile
-        """
+	when:
+		params.normalize.enabled == true
 
+	script:
+		"""
+		mpirun -np ${params.normalize.np} normalize.py \
+			--input ${input_file} \
+			--output ${dataset}_GEM.txt \
+			${params.normalize.log2 ? "--log2" : ""} \
+			${params.normalize.kstest ? "--kstest" : ""} \
+			--ks-log ${dataset}-ks-results.txt \
+			${params.normalize.quantile ? "--quantile" : ""} \
+		"""
 }
-

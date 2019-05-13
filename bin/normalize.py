@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 import dataframe_helper
 import mpi4py.MPI as MPI
