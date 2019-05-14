@@ -87,8 +87,13 @@ process normalize {
 			--output ${dataset}_GEM.txt \
 			${params.normalize.log2 ? "--log2" : ""} \
 			${params.normalize.kstest ? "--kstest" : ""} \
-			--ks-log ${dataset}-ks-results.txt \
-			${params.normalize.quantile ? "--quantile" : ""} \
+			--ks-log ${dataset}-ks-results.txt
+
+		if [[ ${params.normalize.quantile} ]]; then
+			mv ${dataset}_GEM.txt FPKM.txt
+			normalize.R --quantile
+			mv GEM.txt ${dataset}_GEM.txt
+		fi
 		"""
 }
 

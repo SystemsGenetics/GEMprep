@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 # install preprocessCore from bioconductor
 if ( !require("preprocessCore") ) {
   source("http://bioconductor.org/biocLite.R")
@@ -36,16 +38,19 @@ if ("--log2" %in% args)
 }
 
 # plot sample distributions (pre-normalization)
-print("Plotting sample distributions (pre-normalization)...")
-
-png(PLOTFILE_DENSITY_PRE, width=8, height=8, units="in", res=300)
-par(mar=c(2,2,2,2))
-colors <- rainbow(106)
-
-plot(density((emx[,1]), na.rm=TRUE), xlab="log count")
-for (i in 1:ncol(emx))
+if ("--plot-pre" %in% args)
 {
-  lines(density((emx[,i]), na.rm=TRUE), col=colors[i])
+   print("Plotting sample distributions (pre-normalization)...")
+
+   png(PLOTFILE_DENSITY_PRE, width=8, height=8, units="in", res=300)
+   par(mar=c(2,2,2,2))
+   colors <- rainbow(106)
+
+   plot(density((emx[,1]), na.rm=TRUE), xlab="log count")
+   for (i in 1:ncol(emx))
+   {
+     lines(density((emx[,i]), na.rm=TRUE), col=colors[i])
+   }
 }
 
 if ("--kstest" %in% args)
@@ -103,7 +108,7 @@ if ("--quantile" %in% args)
   emx <-as.data.frame(emx, row.names=emx_rownames, col.names=cmx_colnames)
 }
 
-if ("--kstest" %in% args || "--quantile" %in% args)
+if ("--plot-post" %in% args)
 {
   # plot sample distributions (post-normalization)
   print("Plotting sample distributions (post-normalization)...")
