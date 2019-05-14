@@ -15,9 +15,48 @@ GEM_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/*_GEM.txt", si
  */
 FPKM_FILES_FROM_INPUT
 	.into {
+		FPKM_FILES_FOR_CONVERT;
 		FPKM_FILES_FOR_NORMALIZE;
 		FPKM_FILES_FOR_VISUALIZE
 	}
+
+GEM_FILES_FROM_INPUT
+	.into {
+		GEM_FILES_FOR_CONVERT;
+		GEM_FILES_FOR_VISUALIZE
+	}
+
+
+
+/**
+ * Gather expression matrix files for convert process.
+ */
+INPUT_FILES_FOR_CONVERT = FPKM_FILES_FOR_CONVERT.mix(GEM_FILES_FOR_CONVERT)
+
+
+
+/**
+ * The convert process takes an expression matrix and converts it from plaintext
+ * to binary or vise versa.
+ */
+process convert {
+	tag "${dataset}"
+	publishDir "${params.output_dir}/${dataset}"
+
+	input:
+		set val(dataset), file(input_file) from INPUT_FILES_FOR_CONVERT
+
+	output:
+		set val(dataset), file("*.npy"), file("*_rownames.txt"), file("*_colnames.txt")
+
+	when:
+		params.convert.enabled == true
+
+	script:
+		"""
+		convert.py ${input_file}
+		"""
+}
 
 
 
@@ -56,9 +95,7 @@ process normalize {
 /**
  * Gather expression matrix files for visualize process.
  */
-GEM_FILES_FOR_VISUALIZE = FPKM_FILES_FOR_VISUALIZE.mix(
-	GEM_FILES_FROM_INPUT,
-	GEM_FILES_FROM_NORMALIZE)
+INPUT_FILES_FOR_VISUALIZE = FPKM_FILES_FOR_VISUALIZE.mix(GEM_FILES_FOR_VISUALIZE)
 
 
 
@@ -71,7 +108,7 @@ process visualize {
 	publishDir "${params.output_dir}/${dataset}"
 
 	input:
-		set val(dataset), file(input_file) from GEM_FILES_FOR_VISUALIZE
+		set val(dataset), file(input_file) from INPUT_FILES_FOR_VISUALIZE
 
 	output:
 		set val(dataset), file("*.png")

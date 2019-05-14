@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import dataframe_helper
 import numpy as np
 import pandas as pd
