@@ -17,13 +17,15 @@ FPKM_FILES_FROM_INPUT
 	.into {
 		FPKM_FILES_FOR_CONVERT;
 		FPKM_FILES_FOR_NORMALIZE;
-		FPKM_FILES_FOR_VISUALIZE
+		FPKM_FILES_FOR_VISUALIZE;
+		FPKM_FILES_FOR_PARTITION
 	}
 
 GEM_FILES_FROM_INPUT
 	.into {
 		GEM_FILES_FOR_CONVERT;
-		GEM_FILES_FOR_VISUALIZE
+		GEM_FILES_FOR_VISUALIZE;
+		GEM_FILES_FOR_PARTITION
 	}
 
 
@@ -121,5 +123,41 @@ process visualize {
 		visualize.py \
 			--input ${input_file} \
 			${params.visualize.density ? "--density density.png" : ""}
+		"""
+}
+
+
+
+/**
+ * Gather expression matrix files for partition process.
+ */
+INPUT_FILES_FOR_PARTITION = FPKM_FILES_FOR_PARTITION.mix(GEM_FILES_FOR_PARTITION)
+
+
+
+/**
+ * The partition process takes an expression matrix and produces several
+ * sub-matrices based on a partitioning scheme.
+ */
+process partition {
+	tag "${dataset}"
+	publishDir "${params.output_dir}/${dataset}"
+
+	input:
+		set val(dataset), file(input_file) from INPUT_FILES_FOR_PARTITION
+
+	output:
+		set val(dataset), file("*.txt")
+
+	when:
+		params.partition.enabled == true
+
+	script:
+		"""
+		partition.py \
+			--input ${input_file} \
+			--num-partitions ${params.partition.num_partitions} \
+			--method ${params.partition.method} \
+			--log partitions.txt
 		"""
 }
