@@ -16,7 +16,7 @@ def load(filename):
 
 	if ext == "txt":
 		# load dataframe from plaintext file
-		return pd.read_table(filename, index_col=0)
+		return pd.read_csv(filename, index_col=0, sep="\t")
 	elif ext == "npy":
 		# load data matrix from binary file
 		X = np.load(filename)

@@ -29,7 +29,7 @@ if __name__ == "__main__":
 	if args.PARTITIONS != None:
 		print("Loading partition file...")
 
-		pairs = pd.read_table(args.PARTITIONS, header=None, names=["sample", "label"])
+		pairs = pd.read_csv(args.PARTITIONS, header=None, names=["sample", "label"], sep="\t")
 	elif args.NUMPARTS != 0:
 		print("Generating partitions using the %s method..." % (args.METHOD))
 
