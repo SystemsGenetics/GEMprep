@@ -1,17 +1,10 @@
 # GEMprep
 
-This repository contains a variety of tools for gene expression matrices (GEMs). These tools include:
+This repository contains a variety of tools for gene expression matrices (GEMs). These tools can be used individually or through a [Nextflow](https://nextflow.io/) pipeline, also provided in this repository:
 
-- Normalization: log2 transform, KS-test outlier removal, quantile normalization
-- Visualization: t-SNE, sample distributions
+<img src="images/pipeline.png"/>
 
-Included is a Nextflow pipeline which provides a single interface through which to use the GEMprep tools:
-
-<img src="images/workflow-diagram.jpg" width="300"/>
-
-This repository is designed for use on Clemson University's Palmetto Cluster. Documentation for the Palmetto Cluster can be found [here](https://www.palmetto.clemson.edu/palmetto/).
-
-## Prerequisites
+## Dependencies
 
 The recommended way to use the scripts in this repository is with an Anaconda environment. To create an Anaconda environment:
 ```
@@ -29,7 +22,9 @@ curl -s https://get.nextflow.io | bash
 ./nextflow run hello
 ```
 
-## Nextflow
+## Usage
+
+### Nextflow
 
 The Nextflow pipeline can run several tools on a set of GEM files in a single run using the scripts in the `bin` folder. By default, the pipeline uses all GEM files in the `input` directory, runs all steps that are enabled in `nextflow.config`, and saves all results to the `output` folder. There are several settings, such as the directory to your conda environment and the steps to run, which can be found in the `params` section of `nextflow.config`. These settings can be modified to fit the user's needs.
 
@@ -41,8 +36,6 @@ mkdir input
 
 nextflow run main.nf
 ```
-
-## Tools
 
 ### Plaintext and Binary formats
 
