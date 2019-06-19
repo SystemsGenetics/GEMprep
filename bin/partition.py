@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
-import dataframe_helper
 import pandas as pd
 import random
 import sys
+
+import utils
+
+
 
 if __name__ == "__main__":
 	# parse command-line arguments
@@ -18,12 +21,12 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	# determine basename for output files
-	basename, _ = dataframe_helper.split_filename(args.INPUT)
+	basename, _ = utils.split_filename(args.INPUT)
 
 	# load input expression matrix
 	print("Loading expression matrix...")
 
-	emx = dataframe_helper.load(args.INPUT)
+	emx = utils.load_dataframe(args.INPUT)
 
 	# load or generate partition labels
 	if args.PARTITIONS != None:
@@ -67,4 +70,4 @@ if __name__ == "__main__":
 		submatrix = emx[samples]
 
 		# save submatrix
-		dataframe_helper.save(outname, submatrix)
+		utils.save_dataframe(outname, submatrix)

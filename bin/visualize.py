@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 import argparse
-import dataframe_helper
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import sklearn.decomposition
 import sklearn.manifold
+
+import utils
 
 
 
@@ -82,7 +83,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	# load input expression matrix
-	emx = dataframe_helper.load(args.INPUT)
+	emx = utils.load_dataframe(args.INPUT)
 
 	print("Loaded %s %s" % (args.INPUT, str(emx.shape)))
 

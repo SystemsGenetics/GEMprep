@@ -11,7 +11,7 @@ def split_filename(filename):
 
 
 
-def load(filename):
+def load_dataframe(filename):
 	basename, ext = split_filename(filename)
 
 	if ext == "txt":
@@ -33,7 +33,7 @@ def load(filename):
 
 
 
-def save(filename, df):
+def save_dataframe(filename, df):
 	basename, ext = split_filename(filename)
 
 	if ext == "txt":

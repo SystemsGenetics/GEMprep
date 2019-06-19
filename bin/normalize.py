@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
 import argparse
-import dataframe_helper
 import mpi4py.MPI as MPI
 import numpy as np
 import pandas as pd
 import scipy.stats
+
+import utils
+
+
 
 # initialize MPI parameters
 comm = MPI.COMM_WORLD
@@ -141,7 +144,7 @@ if __name__ == "__main__":
 	if rank == 0:
 		print("Loading input expression matrix...")
 
-	emx = dataframe_helper.load(args.INPUT)
+	emx = utils.load_dataframe(args.INPUT)
 
 	# decompose dataframe into data, row names, and column names
 	X = emx.values
@@ -181,4 +184,4 @@ if __name__ == "__main__":
 		print("Saving output expression matrix...")
 
 		emx = pd.DataFrame(X, index=rownames, columns=colnames)
-		dataframe_helper.save(args.OUTPUT, emx)
+		utils.save_dataframe(args.OUTPUT, emx)

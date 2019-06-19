@@ -1,7 +1,10 @@
-import dataframe_helper
 import numpy as np
 import pandas as pd
 import sys
+
+import utils
+
+
 
 if __name__ == "__main__":
 	# parse command-line arguments
@@ -12,7 +15,7 @@ if __name__ == "__main__":
 	INFILE = sys.argv[1]
 
 	# load input data
-	emx = dataframe_helper.load(INFILE)
+	emx = utils.load_dataframe(INFILE)
 	emx = emx.values
 
 	# print global stats

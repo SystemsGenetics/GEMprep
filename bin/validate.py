@@ -1,7 +1,10 @@
 import argparse
-import dataframe_helper
 import numpy as np
 import pandas as pd
+
+import utils
+
+
 
 if __name__ == "__main__":
 	# parse command-line arguments
@@ -12,8 +15,8 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	# load input dataframes
-	emx_true = dataframe_helper.load(args.EMX_TRUE)
-	emx_test = dataframe_helper.load(args.EMX_TEST)
+	emx_true = utils.load_dataframe(args.EMX_TRUE)
+	emx_test = utils.load_dataframe(args.EMX_TEST)
 
 	print("Loaded %s %s" % (args.EMX_TRUE, str(emx_true.shape)))
 	print("Loaded %s %s" % (args.EMX_TEST, str(emx_test.shape)))
