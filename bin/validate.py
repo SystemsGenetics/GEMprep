@@ -9,17 +9,17 @@ import utils
 if __name__ == "__main__":
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument("--true", required=True, help="true expression matrix", dest="EMX_TRUE")
-	parser.add_argument("--test", required=True, help="test expression matrix", dest="EMX_TEST")
+	parser.add_argument("emx_true", help="true expression matrix")
+	parser.add_argument("emx_test", help="test expression matrix")
 
 	args = parser.parse_args()
 
 	# load input dataframes
-	emx_true = utils.load_dataframe(args.EMX_TRUE)
-	emx_test = utils.load_dataframe(args.EMX_TEST)
+	emx_true = utils.load_dataframe(args.emx_true)
+	emx_test = utils.load_dataframe(args.emx_test)
 
-	print("Loaded %s %s" % (args.EMX_TRUE, str(emx_true.shape)))
-	print("Loaded %s %s" % (args.EMX_TEST, str(emx_test.shape)))
+	print("Loaded %s %s" % (args.emx_true, str(emx_true.shape)))
+	print("Loaded %s %s" % (args.emx_test, str(emx_test.shape)))
 
 	# extract data matrix from each dataframe
 	X_true = emx_true.values

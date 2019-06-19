@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import pandas as pd
 import sys
@@ -8,14 +9,13 @@ import utils
 
 if __name__ == "__main__":
 	# parse command-line arguments
-	if len(sys.argv) != 2:
-		print("usage: python stats.py [infile]")
-		sys.exit(-1)
+	parser = argparse.ArgumentParser()
+	parser.add_argument("infile", help="input expression matrix")
 
-	INFILE = sys.argv[1]
+	args = parser.parse_args()
 
 	# load input data
-	emx = utils.load_dataframe(INFILE)
+	emx = utils.load_dataframe(args.infile)
 	emx = emx.values
 
 	# print global stats

@@ -42,10 +42,10 @@ nextflow run main.nf
 The primary way to store an expression matrix in a file is as a tab-delimited text file which includes the row names and column names. The same matrix can also be stored as a binary Numpy (`.npy`) file, which includes only the data, and separate text files for the row names and column names. The script `convert.py` can convert expression matrix files between these two formats:
 ```
 # convert an expression matrix from plaintext to binary
-python bin/convert.py GEM.txt
+python bin/convert.py GEM.txt GEM.npy
 
 # convert the binary matrix back to plaintext
-python bin/convert.py GEM.npy
+python bin/convert.py GEM.npy GEM.txt
 ```
 
 Every Python script in this repository can load and save expression matrices using either format, depending on whether you provide `txt` or `npy` file arguments.
@@ -54,7 +54,7 @@ Every Python script in this repository can load and save expression matrices usi
 
 To normalize an FPKM expression matrix, use the `normalize.R` script:
 ```
-Rscript bin/normalize.R
+Rscript bin/normalize.R [options]
 ```
 
 This script expects an input file called `FPKM.txt` and performs log2 transform, KS test outlier removal, and quantile normalization. It produces a normalized matrix file called `GEM.txt` as well as a log file of the KS test results and several visualizations.
@@ -63,7 +63,7 @@ This script expects an input file called `FPKM.txt` and performs log2 transform,
 
 To create visualizations of an expression matrix, use the `visualize.py` script:
 ```
-python bin/visualize.py -i [infile] [options]
+python bin/visualize.py [infile] [options]
 ```
 
 This script takes an expression matrix file (which may or may not be normalized) and creates several visualizations based on the command line arguments that you provide. Currently this script supports two visualizations:
@@ -78,10 +78,10 @@ For an unnormalized matrix, the sample distributions will vary greatly, but for 
 To partition an expression matrix into several sub-matrices, use the `partition.py` script:
 ```
 # use a pre-defined partition file
-python bin/partition.py -i [infile] -p [partition-file]
+python bin/partition.py [infile] --partitions [partition-file]
 
 # use an automatic partitioning scheme with N partitions
-python bin/partition.py -i [infile] -n N
+python bin/partition.py [infile] --n-partitions N
 ```
 
 This script takes an expression matrix and creates several submatrices based on a partitioning scheme. You can either provide a custom partition file or use the script to automatically generate partitions. The partition file should have two columns, the first column being sample names and the second column being partition labels. When generating partitions automatically, the script will output the resulting partition file, which you can modify to create your own partition files. Run with `-h` to see the list of available options.

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import numpy as np
 import pandas as pd
 import sys
@@ -10,26 +11,18 @@ import utils
 
 if __name__ == "__main__":
 	# parse command-line arguments
-	if len(sys.argv) != 2:
-		print("usage: python convert.py [infile]")
-		sys.exit(-1)
+	parser = argparse.ArgumentParser()
+	parser.add_argument("infile", help="input expression matrix")
+	parser.add_argument("outfile", help="output expression matrix")
 
-	INFILE = sys.argv[1]
+	args = parser.parse_args()
 
-	# determine output format as opposite of input format
-	basename, ext = utils.split_filename(INFILE)
+	# load input dataframe from input format
+	print("Loading %s..." % args.infile)
 
-	if ext == "npy":
-		OUTFILE = "%s.txt" % basename
-	elif ext == "txt":
-		OUTFILE = "%s.npy" % basename
-
-	# load dataframe from input format
-	print("Loading %s..." % INFILE)
-
-	df = utils.load_dataframe(INFILE)
+	df = utils.load_dataframe(args.infile)
 
 	# save dataframe in output format
-	print("Saving %s..." % OUTFILE)
+	print("Saving %s..." % args.outfile)
 
-	utils.save_dataframe(OUTFILE, df)
+	utils.save_dataframe(args.outfile, df)

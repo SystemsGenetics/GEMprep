@@ -72,37 +72,37 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None):
 if __name__ == "__main__":
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-i", "--input", required=True, help="input expression matrix", dest="INPUT")
-	parser.add_argument("--labels", help="text file of sample labels", dest="LABELS")
-	parser.add_argument("--density", help="save density plot to the given filename", dest="DENSITY")
-	parser.add_argument("--density-xmax", type=float, help="upper bound of x-axis", dest="DENSITY_XMAX")
-	parser.add_argument("--tsne", help="save t-SNE plot to the given filename", dest="TSNE")
-	parser.add_argument("--tsne-na", type=float, default=-1e3, help="numerical value to use for missing values", dest="NA_VALUE")
-	parser.add_argument("--tsne-npca", type=int, help="number of principal components to take before t-SNE", dest="N_PCA")
+	parser.add_argument("infile", help="input expression matrix")
+	parser.add_argument("--labels", help="text file of sample labels")
+	parser.add_argument("--density", help="save density plot to the given filename")
+	parser.add_argument("--density-xmax", help="upper bound of x-axis", type=float)
+	parser.add_argument("--tsne", help="save t-SNE plot to the given filename")
+	parser.add_argument("--tsne-na", help="numerical value to use for missing values", type=float, default=-1e3)
+	parser.add_argument("--tsne-npca", help="number of principal components to take before t-SNE", type=int)
 
 	args = parser.parse_args()
 
 	# load input expression matrix
-	emx = utils.load_dataframe(args.INPUT)
+	emx = utils.load_dataframe(args.infile)
 
-	print("Loaded %s %s" % (args.INPUT, str(emx.shape)))
+	print("Loaded %s %s" % (args.infile, str(emx.shape)))
 
 	# load label file or generate empty labels
-	if args.LABELS != None:
+	if args.labels != None:
 		print("Loading label file...")
 
-		labels = np.loadtxt(args.LABELS, dtype=str)
+		labels = np.loadtxt(args.labels, dtype=str)
 	else:
 		labels = np.zeros(len(emx.columns), dtype=str)
 
 	# plot sample distributions
-	if args.DENSITY != None:
+	if args.density != None:
 		print("Plotting sample distributions...")
 
-		plot_density(emx, args.DENSITY, xmax=args.DENSITY_XMAX)
+		plot_density(emx, args.density, xmax=args.density_xmax)
 
 	# plot t-SNE of samples
-	if args.TSNE != None:
+	if args.tsne != None:
 		print("Plotting 2-D t-SNE...")
 
-		plot_tsne(emx, labels, args.TSNE, na_value=args.NA_VALUE, n_pca=args.N_PCA)
+		plot_tsne(emx, labels, args.tsne, na_value=args.tsne_na, n_pca=args.tsne_npca)

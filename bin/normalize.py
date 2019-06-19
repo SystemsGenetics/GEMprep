@@ -128,15 +128,15 @@ def transform_quantile(X, nanmean=False):
 if __name__ == "__main__":
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-i", "--input", required=True, help="input expression matrix", dest="INPUT")
-	parser.add_argument("-o", "--output", required=True, help="output expression matrix", dest="OUTPUT")
-	parser.add_argument("--log2", action="store_true", help="whether to perform a log2 transform", dest="LOG2")
-	parser.add_argument("--log2-alpha", type=float, default=0, help="alpha value in log2 transform: x -> log2(alpha + x)", dest="LOG2_ALPHA")
-	parser.add_argument("--kstest", action="store_true", help="whether to perform outlier removal using the K-S test", dest="KSTEST")
-	parser.add_argument("--ks-log", help="log file of K-S test results", dest="KS_LOG")
-	parser.add_argument("--ks-keepna", action="store_true", help="whether to keep nan's during K-S test", dest="KS_KEEPNA")
-	parser.add_argument("--ks-threshold", type=float, default=0.15, help="threshold for K-S test", dest="KS_THRESHOLD")
-	parser.add_argument("--quantile", action="store_true", help="whether to perform quantile normalization", dest="QUANTILE")
+	parser.add_argument("infile", help="input expression matrix"
+	parser.add_argument("outfile", help="output expression matrix")
+	parser.add_argument("--log2", help="perform a log2 transform", action="store_true")
+	parser.add_argument("--log2-alpha", help="alpha value in log2 transform: x -> log2(alpha + x)", type=float, default=0)
+	parser.add_argument("--kstest", help="perform outlier removal using the K-S test", action="store_true")
+	parser.add_argument("--ks-log", help="log file of K-S test results")
+	parser.add_argument("--ks-keepna", help="keep nan's during K-S test", action="store_true")
+	parser.add_argument("--ks-threshold", help="threshold for K-S test", type=float, default=0.15)
+	parser.add_argument("--quantile", help="perform quantile normalization", action="store_true")
 
 	args = parser.parse_args()
 
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 	if rank == 0:
 		print("Loading input expression matrix...")
 
-	emx = utils.load_dataframe(args.INPUT)
+	emx = utils.load_dataframe(args.infile)
 
 	# decompose dataframe into data, row names, and column names
 	X = emx.values
@@ -152,18 +152,18 @@ if __name__ == "__main__":
 	colnames = emx.columns
 
 	# perform log2 transform
-	if args.LOG2:
+	if args.log2:
 		if rank == 0:
 			print("Performing log2 transform...")
 
-		transform_log2(X, alpha=args.LOG2_ALPHA)
+		transform_log2(X, alpha=args.log2_alpha)
 
 	# perform K-S test
-	if args.KSTEST:
+	if args.kstest:
 		if rank == 0:
 			print("Performing K-S test and outlier removal...")
 
-		mask = transform_kstest(X, colnames, keepna=args.KS_KEEPNA, threshold=args.KS_THRESHOLD, logfile=args.KS_LOG)
+		mask = transform_kstest(X, colnames, keepna=args.ks_keepna, threshold=args.ks_threshold, logfile=args.ks_log)
 
 		# remove outliers from FPKM matrix
 		if rank == 0:
@@ -173,7 +173,7 @@ if __name__ == "__main__":
 			colnames = colnames[mask]
 
 	# perform quantile normalization
-	if args.QUANTILE:
+	if args.quantile:
 		if rank == 0:
 			print("Performing quantile normalization...")
 
@@ -184,4 +184,4 @@ if __name__ == "__main__":
 		print("Saving output expression matrix...")
 
 		emx = pd.DataFrame(X, index=rownames, columns=colnames)
-		utils.save_dataframe(args.OUTPUT, emx)
+		utils.save_dataframe(args.outfile, emx)
