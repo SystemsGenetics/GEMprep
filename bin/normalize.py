@@ -128,7 +128,7 @@ def transform_quantile(X, nanmean=False):
 if __name__ == "__main__":
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument("infile", help="input expression matrix"
+	parser.add_argument("infile", help="input expression matrix")
 	parser.add_argument("outfile", help="output expression matrix")
 	parser.add_argument("--log2", help="perform a log2 transform", action="store_true")
 	parser.add_argument("--log2-alpha", help="alpha value in log2 transform: x -> log2(alpha + x)", type=float, default=0)

@@ -39,7 +39,7 @@ INPUT_FILES_FOR_CONVERT = FPKM_FILES_FOR_CONVERT.mix(GEM_FILES_FOR_CONVERT)
 
 /**
  * The convert process takes an expression matrix and converts it from plaintext
- * to binary or vise versa.
+ * to binary.
  */
 process convert {
 	tag "${dataset}"
@@ -49,14 +49,14 @@ process convert {
 		set val(dataset), file(input_file) from INPUT_FILES_FOR_CONVERT
 
 	output:
-		set val(dataset), file("*.npy"), file("*_rownames.txt"), file("*_colnames.txt")
+		set val(dataset), file("${dataset}.npy"), file("*_rownames.txt"), file("*_colnames.txt")
 
 	when:
 		params.convert.enabled == true
 
 	script:
 		"""
-		convert.py ${input_file}
+		convert.py ${input_file} ${dataset}.npy
 		"""
 }
 
@@ -83,8 +83,8 @@ process normalize {
 	script:
 		"""
 		mpirun -np ${params.normalize.np} normalize.py \
-			--input ${input_file} \
-			--output ${dataset}_GEM.txt \
+			${input_file} \
+			${dataset}_GEM.txt \
 			${params.normalize.log2 ? "--log2" : ""} \
 			${params.normalize.kstest ? "--kstest" : ""} \
 			--ks-log ${dataset}-ks-results.txt
@@ -126,7 +126,7 @@ process visualize {
 	script:
 		"""
 		visualize.py \
-			--input ${input_file} \
+			${input_file} \
 			${params.visualize.density ? "--density density.png" : ""}
 		"""
 }
@@ -160,9 +160,9 @@ process partition {
 	script:
 		"""
 		partition.py \
-			--input ${input_file} \
-			--num-partitions ${params.partition.num_partitions} \
-			--method ${params.partition.method} \
-			--log partitions.txt
+			${input_file} \
+			partitions.txt \
+			--n-partitions ${params.partition.num_partitions} \
+			--method ${params.partition.method}
 		"""
 }
