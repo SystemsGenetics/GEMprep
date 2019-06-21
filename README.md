@@ -7,14 +7,14 @@ This repository contains a variety of tools for gene expression matrices (GEMs).
 ## Dependencies
 
 The recommended way to use the scripts in this repository is with an Anaconda environment. To create an Anaconda environment:
-```
+```bash
 module add anaconda3/5.1.0
 
 conda create -n myenv python=3.6 matplotlib mpi4py numpy pandas r scikit-learn seaborn
 ```
 
 To use the Nextflow pipeline, you must first install Nextflow:
-```
+```bash
 module add java/1.8.0
 
 curl -s https://get.nextflow.io | bash
@@ -29,7 +29,7 @@ curl -s https://get.nextflow.io | bash
 The Nextflow pipeline can run several tools on a set of GEM files in a single run using the scripts in the `bin` folder. By default, the pipeline uses all GEM files in the `input` directory, runs all steps that are enabled in `nextflow.config`, and saves all results to the `output` folder. There are several settings, such as the directory to your conda environment and the steps to run, which can be found in the `params` section of `nextflow.config`. These settings can be modified to fit the user's needs.
 
 To run the Nextflow pipeline:
-```
+```bash
 # place input files in the input directory
 mkdir input
 # ...
@@ -40,7 +40,7 @@ nextflow run main.nf
 ### Plaintext and Binary formats
 
 The primary way to store an expression matrix in a file is as a tab-delimited text file which includes the row names and column names. The same matrix can also be stored as a binary Numpy (`.npy`) file, which includes only the data, and separate text files for the row names and column names. The script `convert.py` can convert expression matrix files between these two formats:
-```
+```bash
 # convert an expression matrix from plaintext to binary
 python bin/convert.py GEM.txt GEM.npy
 
@@ -52,8 +52,15 @@ Every Python script in this repository can load and save expression matrices usi
 
 ### Normalize
 
-To normalize an FPKM expression matrix, use the `normalize.R` script:
+To normalize an expression matrix, there are two scripts, `normalize.py` and `normalize.R`. Both scripts have the same functionality. The Python script is easier to use and can use MPI for the K-S test, but it's implementation of quantile normalization does not exactly match the R implementation.
+
+To use the `normalize.py` script:
+```bash
+python bin/normalize.py <infile> <outfile> [options]
 ```
+
+To use the `normalize.R` script:
+```bash
 Rscript bin/normalize.R [options]
 ```
 
@@ -62,8 +69,8 @@ This script expects an input file called `FPKM.txt` and performs log2 transform,
 ### Visualize
 
 To create visualizations of an expression matrix, use the `visualize.py` script:
-```
-python bin/visualize.py [infile] [options]
+```bash
+python bin/visualize.py <infile> [options]
 ```
 
 This script takes an expression matrix file (which may or may not be normalized) and creates several visualizations based on the command line arguments that you provide. Currently this script supports two visualizations:
@@ -76,12 +83,12 @@ For an unnormalized matrix, the sample distributions will vary greatly, but for 
 ### Partitioning
 
 To partition an expression matrix into several sub-matrices, use the `partition.py` script:
-```
+```bash
 # use a pre-defined partition file
-python bin/partition.py [infile] --partitions [partition-file]
+python bin/partition.py <infile> --partitions [partition-file]
 
 # use an automatic partitioning scheme with N partitions
-python bin/partition.py [infile] --n-partitions N
+python bin/partition.py <infile> --n-partitions N
 ```
 
 This script takes an expression matrix and creates several submatrices based on a partitioning scheme. You can either provide a custom partition file or use the script to automatically generate partitions. The partition file should have two columns, the first column being sample names and the second column being partition labels. When generating partitions automatically, the script will output the resulting partition file, which you can modify to create your own partition files. Run with `-h` to see the list of available options.
