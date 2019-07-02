@@ -13,6 +13,19 @@ module add anaconda3/5.1.0
 conda create -n myenv python=3.6 matplotlib mpi4py numpy pandas r scikit-learn seaborn
 ```
 
+Once this environment has been created, the R package `preprocessCore` must be seperately installed:
+
+```bash
+source activate myenv
+
+# open a shell in R
+R
+
+> install.packages("BiocManager")
+> BiocManager::install()
+> BiocManager::install(c("preprocessCore"))
+```
+
 To use the Nextflow pipeline, you must first install Nextflow:
 ```bash
 module add java/1.8.0
@@ -65,6 +78,8 @@ Rscript bin/normalize.R [options]
 ```
 
 This script expects an input file called `FPKM.txt` and performs log2 transform, KS test outlier removal, and quantile normalization. It produces a normalized matrix file called `GEM.txt` as well as a log file of the KS test results and several visualizations.
+
+There is also a script, `normalize-frankenstein.pbs` that combines these two scripts in a pbs job submission, performing the K-S test and outlier removal using `normalize.py` and then performs quantile normalization using `normalize.R`. This script should be edited to provide the path to the input file as well as both the R and python normalizatin scripts. It expects an input in the form of `<dataset>_FPKM.txt` and outputs the GEM as `<dataset>.emx.txt`.
 
 ### Visualize
 
