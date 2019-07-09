@@ -14,6 +14,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("infile", help="input expression matrix")
 	parser.add_argument("outfile", help="output expression matrix")
+	parser.add_argument("--transpose", help="Transpose the input file", action="store_true")
 
 	args = parser.parse_args()
 
@@ -21,6 +22,11 @@ if __name__ == "__main__":
 	print("Loading %s..." % args.infile)
 
 	df = utils.load_dataframe(args.infile)
+
+	# transpose dataframe if specified
+	if args.transpose:
+		print("transposing matrix...")
+		df = df.T
 
 	# save dataframe in output format
 	print("Saving %s..." % args.outfile)
