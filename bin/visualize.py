@@ -31,7 +31,9 @@ def plot_density(X, filename, xmin=None, xmax=None):
 	plt.xlabel("Expression Level")
 	plt.ylabel("Density")
 	plt.xlim(xmin, xmax)
+
 	plt.savefig(filename)
+	plt.close()
 
 
 
@@ -66,6 +68,7 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None):
 		plt.colorbar()
 
 	plt.savefig(filename)
+	plt.close()
 
 
 
