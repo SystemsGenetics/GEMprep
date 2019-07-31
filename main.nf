@@ -127,7 +127,10 @@ process visualize {
 		"""
 		visualize.py \
 			${input_file} \
-			${params.visualize.density ? "--density density.png" : ""}
+			${params.visualize.density ? "--density density.png" : ""} \
+			${params.visualize.tsne ? "--tsne tsne.png" : ""} \
+			--tsne-na ${params.visualize.tsne_na} \
+			--tsne-npca ${params.visualize.tsne_npca}
 		"""
 }
 
