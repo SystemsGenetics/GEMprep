@@ -57,6 +57,15 @@ process convert_txt_npy {
 
 
 /**
+ * Make sure that at most one quantile method (R or python) is enabled.
+ */
+if ( params.normalize.quantile_py == true && params.normalize.quantile_r == true ) {
+	error "error: only one quantile method (R or python) should be enabled"
+}
+
+
+
+/**
  * The normalize process takes an FPKM expression matrix and applies a series
  * of transformations (log2, k-s test outlier removal, quantile normalization)
  * which produces a normalized expression matrix.
@@ -81,9 +90,10 @@ process normalize {
 			${dataset}.emx.txt \
 			${params.normalize.log2 ? "--log2" : ""} \
 			${params.normalize.kstest ? "--kstest" : ""} \
-			--ks-log ${dataset}-ks-results.txt
+			--ks-log ${dataset}-ks-results.txt \
+			${params.normalize.quantile_py ? "--quantile" : ""}
 
-		if [[ ${params.normalize.quantile} ]]; then
+		if [[ ${params.normalize.quantile_r} == true ]]; then
 			mv ${dataset}.emx.txt FPKM.txt
 			normalize.R --quantile
 			mv GEM.txt ${dataset}.emx.txt
