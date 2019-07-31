@@ -85,7 +85,7 @@ process normalize {
 
 	script:
 		"""
-		mpirun --allow-run-as-root -np ${params.normalize.np} normalize.py \
+		mpirun -np ${params.normalize.np} normalize.py \
 			${input_file} \
 			${dataset}.emx.txt \
 			${params.normalize.log2 ? "--log2" : ""} \
