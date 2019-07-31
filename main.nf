@@ -5,35 +5,29 @@
 /**
  * Create channel for input files.
  */
-FPKM_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/*_FPKM.txt", size: 1, flat: true)
-GEM_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/*_GEM.txt", size: 1, flat: true)
+FPKM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input.dir}/${params.input.fpkm_txt}", size: 1, flat: true)
+RAW_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input.dir}/${params.input.raw_txt}", size: 1, flat: true)
+TPM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input.dir}/${params.input.tpm_txt}", size: 1, flat: true)
+EMX_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input.dir}/${params.input.emx_txt}", size: 1, flat: true)
 
 
 
 /**
  * Send input files to each process that uses them.
  */
-FPKM_FILES_FROM_INPUT
+Channel.empty()
+	.mix(
+		FPKM_TXT_FILES_FROM_INPUT,
+		RAW_TXT_FILES_FROM_INPUT,
+		TPM_TXT_FILES_FROM_INPUT,
+		EMX_TXT_FILES_FROM_INPUT
+	)
 	.into {
-		FPKM_FILES_FOR_CONVERT;
-		FPKM_FILES_FOR_NORMALIZE;
-		FPKM_FILES_FOR_VISUALIZE;
-		FPKM_FILES_FOR_PARTITION
+		DATA_TXT_FILES_FOR_CONVERT;
+		DATA_TXT_FILES_FOR_NORMALIZE;
+		DATA_TXT_FILES_FOR_VISUALIZE;
+		DATA_TXT_FILES_FOR_PARTITION
 	}
-
-GEM_FILES_FROM_INPUT
-	.into {
-		GEM_FILES_FOR_CONVERT;
-		GEM_FILES_FOR_VISUALIZE;
-		GEM_FILES_FOR_PARTITION
-	}
-
-
-
-/**
- * Gather expression matrix files for convert process.
- */
-INPUT_FILES_FOR_CONVERT = FPKM_FILES_FOR_CONVERT.mix(GEM_FILES_FOR_CONVERT)
 
 
 
@@ -41,18 +35,18 @@ INPUT_FILES_FOR_CONVERT = FPKM_FILES_FOR_CONVERT.mix(GEM_FILES_FOR_CONVERT)
  * The convert process takes an expression matrix and converts it from plaintext
  * to binary.
  */
-process convert {
+process convert_txt_npy {
 	tag "${dataset}"
-	publishDir "${params.output_dir}/${dataset}"
+	publishDir "${params.output.dir}/${dataset}"
 
 	input:
-		set val(dataset), file(input_file) from INPUT_FILES_FOR_CONVERT
+		set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_CONVERT
 
 	output:
 		set val(dataset), file("${dataset}.npy"), file("*_rownames.txt"), file("*_colnames.txt")
 
 	when:
-		params.convert.enabled == true
+		params.convert_txt_npy.enabled == true
 
 	script:
 		"""
@@ -69,13 +63,13 @@ process convert {
  */
 process normalize {
 	tag "${dataset}"
-	publishDir "${params.output_dir}/${dataset}"
+	publishDir "${params.output.dir}/${dataset}"
 
 	input:
-		set val(dataset), file(input_file) from FPKM_FILES_FOR_NORMALIZE
+		set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_NORMALIZE
 
 	output:
-		set val(dataset), file("${dataset}_GEM.txt") into GEM_FILES_FROM_NORMALIZE
+		set val(dataset), file("${dataset}.emx.txt")
 
 	when:
 		params.normalize.enabled == true
@@ -84,25 +78,18 @@ process normalize {
 		"""
 		mpirun -np ${params.normalize.np} normalize.py \
 			${input_file} \
-			${dataset}_GEM.txt \
+			${dataset}.emx.txt \
 			${params.normalize.log2 ? "--log2" : ""} \
 			${params.normalize.kstest ? "--kstest" : ""} \
 			--ks-log ${dataset}-ks-results.txt
 
 		if [[ ${params.normalize.quantile} ]]; then
-			mv ${dataset}_GEM.txt FPKM.txt
+			mv ${dataset}.emx.txt FPKM.txt
 			normalize.R --quantile
-			mv GEM.txt ${dataset}_GEM.txt
+			mv GEM.txt ${dataset}.emx.txt
 		fi
 		"""
 }
-
-
-
-/**
- * Gather expression matrix files for visualize process.
- */
-INPUT_FILES_FOR_VISUALIZE = FPKM_FILES_FOR_VISUALIZE.mix(GEM_FILES_FOR_VISUALIZE)
 
 
 
@@ -112,10 +99,10 @@ INPUT_FILES_FOR_VISUALIZE = FPKM_FILES_FOR_VISUALIZE.mix(GEM_FILES_FOR_VISUALIZE
  */
 process visualize {
 	tag "${dataset}"
-	publishDir "${params.output_dir}/${dataset}"
+	publishDir "${params.output.dir}/${dataset}"
 
 	input:
-		set val(dataset), file(input_file) from INPUT_FILES_FOR_VISUALIZE
+		set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_VISUALIZE
 
 	output:
 		set val(dataset), file("*.png")
@@ -137,22 +124,15 @@ process visualize {
 
 
 /**
- * Gather expression matrix files for partition process.
- */
-INPUT_FILES_FOR_PARTITION = FPKM_FILES_FOR_PARTITION.mix(GEM_FILES_FOR_PARTITION)
-
-
-
-/**
  * The partition process takes an expression matrix and produces several
  * sub-matrices based on a partitioning scheme.
  */
 process partition {
 	tag "${dataset}"
-	publishDir "${params.output_dir}/${dataset}"
+	publishDir "${params.output.dir}/${dataset}"
 
 	input:
-		set val(dataset), file(input_file) from INPUT_FILES_FOR_PARTITION
+		set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_PARTITION
 
 	output:
 		set val(dataset), file("*.txt")
