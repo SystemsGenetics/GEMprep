@@ -43,14 +43,14 @@ process convert_txt_npy {
 		set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_CONVERT
 
 	output:
-		set val(dataset), file("${dataset}.npy"), file("*_rownames.txt"), file("*_colnames.txt")
+		set val(dataset), file("*.npy"), file("*.rownames.txt"), file("*.colnames.txt")
 
 	when:
 		params.convert_txt_npy.enabled == true
 
 	script:
 		"""
-		convert.py ${input_file} ${dataset}.npy
+		convert.py ${input_file} \$(basename ${input_file} .txt).npy
 		"""
 }
 
