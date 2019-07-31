@@ -76,7 +76,7 @@ process normalize {
 
 	script:
 		"""
-		mpirun -np ${params.normalize.np} normalize.py \
+		mpirun --allow-run-as-root -np ${params.normalize.np} normalize.py \
 			${input_file} \
 			${dataset}.emx.txt \
 			${params.normalize.log2 ? "--log2" : ""} \
