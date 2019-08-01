@@ -22,8 +22,8 @@ def transform_log2(X, alpha=0):
 	for i in range(X.shape[1]):
 		if rank == i % size:
 			X_i = X[:, i]
-			X_i[X_i == 0] = np.nan
 			X_i[:] = np.log2(alpha + X_i)
+			X_i[np.isinf(X_i)] = np.nan
 
 	# gather columns
 	for i in range(X.shape[1]):
