@@ -79,6 +79,7 @@ process normalize {
 
 	output:
 		set val(dataset), file("${dataset}.emx.txt")
+		set val(dataset), file("${dataset}.kstest.txt")
 
 	when:
 		params.normalize.enabled == true
