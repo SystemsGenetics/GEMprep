@@ -90,7 +90,7 @@ process normalize {
 			${dataset}.emx.txt \
 			${params.normalize.log2 ? "--log2" : ""} \
 			${params.normalize.kstest ? "--kstest" : ""} \
-			--ks-log ${dataset}-ks-results.txt \
+			--ks-log ${dataset}.kstest.txt \
 			${params.normalize.quantile_py ? "--quantile" : ""}
 
 		if [[ ${params.normalize.quantile_r} == true ]]; then
