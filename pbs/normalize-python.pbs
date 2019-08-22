@@ -6,23 +6,23 @@
 INFILE="data/TCGA_FPKM.npy"
 OUTFILE="TCGA_GEM.txt"
 LOGFILE="TCGA-ks-results.txt"
-NP=$(cat $PBS_NODEFILE | wc -l)
+NP=$(cat ${PBS_NODEFILE} | wc -l)
 
-if [ $PBS_ENVIRONMENT = "PBS_BATCH" ]; then
+if [ ${PBS_ENVIRONMENT} = "PBS_BATCH" ]; then
 	module purge
 	module add anaconda3/5.1.0
 
-	cd $PBS_O_WORKDIR
+	cd ${PBS_O_WORKDIR}
 fi
 
 source activate myenv
 
-mpirun -np $NP python bin/normalize.py \
-	--input $INFILE \
-	--output $OUTFILE \
+mpirun -np ${NP} python bin/normalize.py \
+	--input ${INFILE} \
+	--output ${OUTFILE} \
 	--log2 \
 	--kstest \
-	--ks-log $LOGFILE \
+	--ks-log ${LOGFILE} \
 	--quantile
 
 source deactivate

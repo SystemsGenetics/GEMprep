@@ -6,20 +6,20 @@
 INFILE="data/TCGA_FPKM.txt"
 OUTDIR="results/TCGA"
 
-if [ $PBS_ENVIRONMENT = "PBS_BATCH" ]; then
+if [ ${PBS_ENVIRONMENT} = "PBS_BATCH" ]; then
 	module purge
 	module add anaconda3/5.1.0
 
-	cd $PBS_O_WORKDIR
+	cd ${PBS_O_WORKDIR}
 fi
 
 source activate myenv
 
-mkdir -p $OUTDIR
-cp $INFILE $OUTDIR/FPKM.txt
+mkdir -p ${OUTDIR}
+ln ${INFILE} ${OUTDIR}/FPKM.txt
 
-cd $OUTDIR
+cd ${OUTDIR}
 
-Rscript $OLDPWD/bin/normalize.R --log2 --kstest --quantile
+Rscript ${OLDPWD}/bin/normalize.R --log2 --kstest --quantile
 
 source deactivate
