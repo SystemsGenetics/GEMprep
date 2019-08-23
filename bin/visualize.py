@@ -31,7 +31,9 @@ def plot_density(X, filename, xmin=None, xmax=None):
 	plt.xlabel("Expression Level")
 	plt.ylabel("Density")
 	plt.xlim(xmin, xmax)
-	plt.xticks(np.arange(int(xmin), int(xmax), 1))
+
+	if xmax - xmin < 100:
+		plt.xticks(np.arange(int(xmin), int(xmax), 1))
 
 	plt.savefig(filename)
 	plt.close()

@@ -43,7 +43,12 @@ if __name__ == "__main__":
 	# compute difference
 	diff = np.abs(X_true - X_test)
 
+	# count the number of errors
+	num_errors = np.sum(diff > 1e-6)
+
+	print("number of errors: %d" % num_errors)
+
 	# print stats
 	print("min error: %12.6f" % (np.nanmin(diff)))
-	print("avg error: %12.6f" % (np.nanmean(diff)))
+	print("avg error: %12.6f +/- %12.6f" % (np.nanmean(diff), np.nanstd(diff)))
 	print("max error: %12.6f" % (np.nanmax(diff)))
