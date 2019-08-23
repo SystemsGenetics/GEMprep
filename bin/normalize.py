@@ -137,6 +137,7 @@ if __name__ == "__main__":
 	parser.add_argument("--ks-keepna", help="keep nan's during K-S test", action="store_true")
 	parser.add_argument("--ks-threshold", help="threshold for K-S test", type=float, default=0.15)
 	parser.add_argument("--quantile", help="perform quantile normalization", action="store_true")
+	parser.add_argument("--quantile-nanmean", help="use nanmean during quantile normalization", action="store_true")
 
 	args = parser.parse_args()
 
@@ -177,7 +178,7 @@ if __name__ == "__main__":
 		if rank == 0:
 			print("Performing quantile normalization...")
 
-		transform_quantile(X)
+		transform_quantile(X, nanmean=args.quantile_nanmean)
 
 	# save output matrix
 	if rank == 0:
