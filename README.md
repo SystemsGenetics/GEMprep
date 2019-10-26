@@ -37,6 +37,8 @@ curl -s https://get.nextflow.io | bash
 
 ## Usage
 
+__NOTE__: For any of the Python scripts described below, you can run the script with the `-h` option to see all of the available options.
+
 ### Nextflow
 
 The Nextflow pipeline can run several tools on a set of GEM files in a single run using the scripts in the `bin` folder. By default, the pipeline uses all GEM files in the `input` directory, runs all steps that are enabled in `nextflow.config`, and saves all results to the `output` folder. There are several settings, such as the directory to your conda environment and the steps to run, which can be found in the `params` section of `nextflow.config`. These settings can be modified to fit the user's needs.
@@ -74,7 +76,7 @@ python bin/normalize.py <infile> <outfile> [options]
 
 To use the `normalize.R` script:
 ```bash
-Rscript bin/normalize.R [options]
+Rscript bin/normalize.R [--log2] [--kstest] [--quantile]
 ```
 
 This script expects an input file called `FPKM.txt` and performs log2 transform, KS test outlier removal, and quantile normalization. It produces a normalized matrix file called `GEM.txt` as well as a log file of the KS test results and several visualizations.
