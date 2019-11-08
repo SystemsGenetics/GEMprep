@@ -81,7 +81,7 @@ Rscript bin/normalize.R [--log2] [--kstest] [--quantile]
 
 This script expects an input file called `FPKM.txt` and performs log2 transform, KS test outlier removal, and quantile normalization. It produces a normalized matrix file called `GEM.txt` as well as a log file of the KS test results and several visualizations.
 
-There is also a script, `normalize-frankenstein.pbs` that combines these two scripts in a pbs job submission, performing the K-S test and outlier removal using `normalize.py` and then performs quantile normalization using `normalize.R`. This script should be edited to provide the path to the input file as well as both the R and python normalizatin scripts. It expects an input in the form of `<dataset>_FPKM.txt` and outputs the GEM as `<dataset>.emx.txt`.
+There is also a script, `normalize-frankenstein.pbs` that combines these two scripts in a PBS job submission, performing the K-S test and outlier removal using `normalize.py` and then performs quantile normalization using `normalize.R`. This script should be edited to provide the path to the input file as well as both the R and python normalization scripts. It expects an input in the form of `<dataset>.fpkm.txt` and outputs the GEM as `<dataset>.emx.txt`.
 
 ### Visualize
 

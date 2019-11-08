@@ -3,8 +3,8 @@
 #PBS -l select=100:ncpus=1:mpiprocs=1:mem=16gb:interconnect=fdr,walltime=72:00:00
 #PBS -j oe
 
-INFILE="data/TCGA_FPKM.npy"
-OUTFILE="TCGA_GEM.txt"
+INFILE="data/TCGA.fpkm.npy"
+OUTFILE="TCGA.emx.txt"
 LOGFILE="TCGA-ks-results.txt"
 NP=$(cat ${PBS_NODEFILE} | wc -l)
 
