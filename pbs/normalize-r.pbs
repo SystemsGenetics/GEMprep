@@ -13,7 +13,7 @@ if [ ${PBS_ENVIRONMENT} = "PBS_BATCH" ]; then
 	cd ${PBS_O_WORKDIR}
 fi
 
-source activate myenv
+source activate gemprep
 
 mkdir -p ${OUTDIR}
 ln ${INFILE} ${OUTDIR}/FPKM.txt

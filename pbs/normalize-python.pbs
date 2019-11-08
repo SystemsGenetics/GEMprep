@@ -15,7 +15,7 @@ if [ ${PBS_ENVIRONMENT} = "PBS_BATCH" ]; then
 	cd ${PBS_O_WORKDIR}
 fi
 
-source activate myenv
+source activate gemprep
 
 mpirun -np ${NP} python bin/normalize.py \
 	--input ${INFILE} \

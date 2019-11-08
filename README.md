@@ -10,13 +10,13 @@ The recommended way to use the scripts in this repository is with an Anaconda en
 ```bash
 module add anaconda3/5.1.0
 
-conda create -n myenv python=3.6 matplotlib mpi4py numpy pandas r scikit-learn seaborn
+conda create -n gemprep python=3.6 matplotlib mpi4py numpy pandas r scikit-learn seaborn
 ```
 
 Once this environment has been created, the R package `preprocessCore` must be seperately installed:
 
 ```bash
-source activate myenv
+source activate gemprep
 
 # open a shell in R
 R
@@ -109,3 +109,10 @@ python bin/partition.py <infile> --n-partitions N
 ```
 
 This script takes an expression matrix and creates several submatrices based on a partitioning scheme. You can either provide a custom partition file or use the script to automatically generate partitions. The partition file should have two columns, the first column being sample names and the second column being partition labels. When generating partitions automatically, the script will output the resulting partition file, which you can modify to create your own partition files. Run with `-h` to see the list of available options.
+
+### Merging
+
+To merge several expression matrices into a single matrix, use the `merge.py` script:
+```bash
+python bin/merge.py <infiles> <outfile>
+```
