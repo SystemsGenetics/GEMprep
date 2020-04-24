@@ -40,7 +40,7 @@ def plot_density(X, filename, xmin=None, xmax=None):
 
 
 
-def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None):
+def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, colors=None):
 	# fill missing values with a representative value
 	X = X.fillna(na_value)
 
@@ -60,10 +60,15 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None):
 
 	if y.dtype.kind in "OSU":
 		classes = list(set(y))
+		if colors == None:
+			colors = [None for c in classes]
 
-		for c in classes:
-			mask = (y == c)
-			plt.scatter(X_tsne[mask, 0], X_tsne[mask, 1], s=20, label=c)
+		if len(colors) != len(classes):
+			print("error: colors list must contain %d different colors" % (len(classes)))
+			return
+
+		for label, color in zip(classes, colors):
+			plt.scatter(X_tsne[y == label, 0], X_tsne[y == label, 1], s=20, c=color, marker='o', label=label)
 
 		plt.legend()
 	else:
@@ -85,6 +90,7 @@ if __name__ == "__main__":
 	parser.add_argument("--tsne", help="save t-SNE plot to the given filename")
 	parser.add_argument("--tsne-na", help="numerical value to use for missing values", type=float, default=-1e3)
 	parser.add_argument("--tsne-npca", help="number of principal components to take before t-SNE", type=int)
+	parser.add_argument("--tsne-colors", help="list of custom colors for t-SNE plot", nargs="+")
 
 	args = parser.parse_args()
 
@@ -105,10 +111,19 @@ if __name__ == "__main__":
 	if args.density != None:
 		print("Plotting sample distributions...")
 
-		plot_density(emx, args.density, xmax=args.density_xmax)
+		plot_density(
+			emx,
+			args.density,
+			xmax=args.density_xmax)
 
 	# plot t-SNE of samples
 	if args.tsne != None:
 		print("Plotting 2-D t-SNE...")
 
-		plot_tsne(emx, labels, args.tsne, na_value=args.tsne_na, n_pca=args.tsne_npca)
+		plot_tsne(
+			emx,
+			labels,
+			args.tsne,
+			na_value=args.tsne_na,
+			n_pca=args.tsne_npca,
+			colors=args.tsne_colors)
