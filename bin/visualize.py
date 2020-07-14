@@ -40,7 +40,7 @@ def plot_density(X, filename, xmin=None, xmax=None):
 
 
 
-def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, colors=None):
+def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, classes=None, sizes=None, colors=None, alphas=None):
 	# fill missing values with a representative value
 	X = X.fillna(na_value)
 
@@ -58,24 +58,37 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, colors=None):
 	# plot the 2-D embedding
 	plt.axis("off")
 
+	# use discrete colors if y is categorical
 	if y.dtype.kind in "OSU":
-		classes = list(set(y))
+		# use alphabetical order if not specified
+		if classes == None:
+			classes = list(set(y))
+
+		# use default marker size for all classes if not specified
+		if sizes == None:
+			sizes = [20 for c in classes]
+
+		# use default color palette if not specified
 		if colors == None:
 			colors = [None for c in classes]
 
-		if len(colors) != len(classes):
-			print("error: colors list must contain %d different colors" % (len(classes)))
-			return
+		# use default alpha values if not specified
+		if alphas == None:
+			alphas = [1.0 for c in classes]
 
-		for label, color in zip(classes, colors):
-			plt.scatter(X_tsne[y == label, 0], X_tsne[y == label, 1], s=20, c=color, marker='o', label=label)
+		# plot each class with its own display parameters
+		for label, s, color, alpha in zip(classes, sizes, colors, alphas):
+			plt.scatter(X_tsne[y == label, 0], X_tsne[y == label, 1], s=s, c=color, marker='o', label=label, alpha=alpha)
 
 		plt.legend()
+
+	# use colorbar if y is continuous
 	else:
 		plt.scatter(X_tsne[:, 0], X_tsne[:, 1], s=20, c=y)
 		plt.colorbar()
 
-	plt.savefig(filename)
+	# save figure to file
+	plt.savefig(filename, dpi=600)
 	plt.close()
 
 
@@ -90,7 +103,10 @@ if __name__ == "__main__":
 	parser.add_argument("--tsne", help="save t-SNE plot to the given filename")
 	parser.add_argument("--tsne-na", help="numerical value to use for missing values", type=float, default=-1e3)
 	parser.add_argument("--tsne-npca", help="number of principal components to take before t-SNE", type=int)
-	parser.add_argument("--tsne-colors", help="list of custom colors for t-SNE plot", nargs="+")
+	parser.add_argument("--tsne-classes", help="list of class labels for t-SNE plot (must match labels file)", nargs="+")
+	parser.add_argument("--tsne-sizes", help="list of per-class marker sizes for t-SNE plot", type=int, nargs="+")
+	parser.add_argument("--tsne-colors", help="list of per-class colors for t-SNE plot", nargs="+")
+	parser.add_argument("--tsne-alphas", help="list of per-class alphas for t-SNE plot", type=float, nargs="+")
 
 	args = parser.parse_args()
 
@@ -126,4 +142,7 @@ if __name__ == "__main__":
 			args.tsne,
 			na_value=args.tsne_na,
 			n_pca=args.tsne_npca,
-			colors=args.tsne_colors)
+			classes=args.tsne_classes,
+			sizes=args.tsne_sizes,
+			colors=args.tsne_colors,
+			alphas=args.tsne_alphas)

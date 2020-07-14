@@ -97,6 +97,20 @@ This script takes an expression matrix file (which may or may not be normalized)
 
 For an unnormalized matrix, the sample distributions will vary greatly, but for a normalized matrix, the samples should have similar distributions. For the t-SNE plot, a label file can be provided to color the data points by their respective label. The file should contain a label for each sample, separated by newlines. The labels can be text or numeric.
 
+For the t-SNE plot, you can also control the display style of each class. Here's an example:
+```
+python bin/visualize.py \
+    tcga.emx.txt \
+    --labels tcga.labels.txt \
+    --tsne tcga.tsne.png \
+    --tsne-classes BLCA GBM LGG OV THCA \
+    --tsne-sizes 20 40 20 20 20 \
+    --tsne-colors blueviolet crimson deepskyblue springgreen lightpink \
+    --tsne-alphas 0.5 1.0 0.5 0.5 0.5
+```
+
+The example above will produce a t-SNE plot of the TCGA dataset which emphasizes the GBM (glioblastoma) class by making the GBM samples larger and suppressing the alpha values of the other classes. You can specify or not specify any of these four options -- default values will be provided for those that you don't specify -- and you can use any of the [named colors supported by matplotlib](https://matplotlib.org/3.2.2/gallery/color/named_colors.html). The only constraint is that each option must provide as many values as there are classes. Additionally, the `--tsne-classes` option must match the class names in the labels file but it allows you to specify a particular order.
+
 ### Partitioning
 
 To partition an expression matrix into several sub-matrices, use the `partition.py` script:
