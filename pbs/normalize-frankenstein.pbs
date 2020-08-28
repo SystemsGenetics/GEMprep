@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -N normalize
-#PBS -l select=100:ncpus=1:mpiprocs=1:mem=16gb:interconnect=fdr,walltime=72:00:00
+#PBS -l select=4:ncpus=1:mpiprocs=1:mem=16gb:interconnect=fdr,walltime=72:00:00
 #PBS -j oe
 
 INFILE="data/TCGA.fpkm.npy"
