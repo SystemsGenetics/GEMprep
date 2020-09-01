@@ -1,11 +1,5 @@
 #!/usr/bin/env Rscript
 
-# install preprocessCore from bioconductor
-if ( !require("preprocessCore") ) {
-  source("http://bioconductor.org/biocLite.R")
-  biocLite(c("preprocessCore"))
-}
-
 # load libraries
 library(preprocessCore)
 
