@@ -80,7 +80,7 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, classes=None, sizes=N
 		for label, s, color, alpha in zip(classes, sizes, colors, alphas):
 			plt.scatter(X_tsne[y == label, 0], X_tsne[y == label, 1], s=s, c=color, marker='o', label=label, alpha=alpha)
 
-		plt.legend()
+		plt.legend(bbox_to_anchor=(1.05, 1.0))
 
 	# use colorbar if y is continuous
 	else:
@@ -88,7 +88,7 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, classes=None, sizes=N
 		plt.colorbar()
 
 	# save figure to file
-	plt.savefig(filename, dpi=600)
+	plt.savefig(filename, dpi=600, bbox_inches='tight')
 	plt.close()
 
 
