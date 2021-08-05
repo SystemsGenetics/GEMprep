@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
+'''
+Create any of the following visualizations for an expression matrix:
 
+- Density plot of expression values in each sample
+- t-SNE plot of samples
+'''
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np

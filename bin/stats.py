@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+'''
+Compute several summary statistics for an expression matrix.
+'''
 import argparse
 import numpy as np
 import pandas as pd
@@ -22,14 +26,14 @@ if __name__ == "__main__":
 	print("shape: %s" % str(emx.shape))
 
 	print("global:")
-	print("  min: %12.6f" % (np.nanmin(emx)))
-	print("  avg: %12.6f" % (np.nanmean(emx)))
-	print("  max: %12.6f" % (np.nanmax(emx)))
+	print("  min:  %12.6f" % (np.nanmin(emx)))
+	print("  mean: %12.6f" % (np.nanmean(emx)))
+	print("  max:  %12.6f" % (np.nanmax(emx)))
 
 	# print column-wise stats
 	colmeans = np.nanmean(emx, axis=0)
 
 	print("column-wise mean:")
-	print("  min: %12.6f" % (np.nanmin(colmeans)))
-	print("  avg: %12.6f" % (np.nanmean(colmeans)))
-	print("  max: %12.6f" % (np.nanmax(colmeans)))
+	print("  min:  %12.6f" % (np.nanmin(colmeans)))
+	print("  mean: %12.6f" % (np.nanmean(colmeans)))
+	print("  max:  %12.6f" % (np.nanmax(colmeans)))

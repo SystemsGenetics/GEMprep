@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
+'''
+Perform any of a series of standard transformations to an
+expression matrix, including log2 transform, outlier removal
+via K-S test, and quantile normalization.
 
+NOTE: The implementation of quantile normalization in this
+script does not behave identically to normalize.quantiles()
+in R when the input matrix has missing values.
+'''
 import argparse
 import mpi4py.MPI as MPI
 import numpy as np
@@ -34,12 +42,12 @@ def transform_log2(X, alpha=0):
 
 def transform_kstest(X, colnames, keepna=False, threshold=0.15, logfile=None):
 	# extract global distribution
-	g = X.reshape(-1, order="F")
+	g = X.reshape(-1, order='F')
 	if not keepna:
 		g = g[~np.isnan(g)]
 	# g = scipy.stats.norm.cdf(g)
 
-	print("%d: extracted global distribution: %s" % (rank, str(g.shape)))
+	print('%d: extracted global distribution: %s' % (rank, str(g.shape)))
 
 	# perform K-S test on each column
 	ks_results = []
@@ -69,9 +77,9 @@ def transform_kstest(X, colnames, keepna=False, threshold=0.15, logfile=None):
 
 	# save results to file
 	if logfile != None:
-		f = open(logfile, "w")
-		f.write("%s\t%s\t%s\n" % ("sample", "d", "p"))
-		f.write("\n".join([("%s\t%.6f\t%.6f" % (colname, d, p)) for (_, colname, d, p) in ks_results]))
+		f = open(logfile, 'w')
+		f.write('%s\t%s\t%s\n' % ('sample', 'd', 'p'))
+		f.write('\n'.join([('%s\t%.6f\t%.6f' % (colname, d, p)) for (_, colname, d, p) in ks_results]))
 
 	# return mask of non-outliers
 	return [d < threshold for (_, _, d, p) in ks_results]
@@ -125,25 +133,25 @@ def transform_quantile(X, nanmean=False):
 
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument("infile", help="input expression matrix")
-	parser.add_argument("outfile", help="output expression matrix")
-	parser.add_argument("--log2", help="perform a log2 transform", action="store_true")
-	parser.add_argument("--log2-alpha", help="alpha value in log2 transform: x -> log2(alpha + x)", type=float, default=0)
-	parser.add_argument("--kstest", help="perform outlier removal using the K-S test", action="store_true")
-	parser.add_argument("--ks-log", help="log file of K-S test results")
-	parser.add_argument("--ks-keepna", help="keep nan's during K-S test", action="store_true")
-	parser.add_argument("--ks-threshold", help="threshold for K-S test", type=float, default=0.15)
-	parser.add_argument("--quantile", help="perform quantile normalization", action="store_true")
-	parser.add_argument("--quantile-nanmean", help="use nanmean during quantile normalization", action="store_true")
+	parser.add_argument('infile', help='input expression matrix')
+	parser.add_argument('outfile', help='output expression matrix')
+	parser.add_argument('--log2', help='perform a log2 transform', action='store_true')
+	parser.add_argument('--log2-alpha', help='alpha value in log2 transform: x -> log2(alpha + x)', type=float, default=0)
+	parser.add_argument('--kstest', help='perform outlier removal using the K-S test', action='store_true')
+	parser.add_argument('--ks-log', help='log file of K-S test results')
+	parser.add_argument('--ks-keepna', help='keep nan's during K-S test', action='store_true')
+	parser.add_argument('--ks-threshold', help='threshold for K-S test', type=float, default=0.15)
+	parser.add_argument('--quantile', help='perform quantile normalization', action='store_true')
+	parser.add_argument('--quantile-nanmean', help='use nanmean during quantile normalization', action='store_true')
 
 	args = parser.parse_args()
 
 	# load input expression matrix
 	if rank == 0:
-		print("Loading input expression matrix...")
+		print('Loading input expression matrix...')
 
 	emx = utils.load_dataframe(args.infile)
 
@@ -155,20 +163,20 @@ if __name__ == "__main__":
 	# perform log2 transform
 	if args.log2:
 		if rank == 0:
-			print("Performing log2 transform...")
+			print('Performing log2 transform...')
 
 		transform_log2(X, alpha=args.log2_alpha)
 
 	# perform K-S test
 	if args.kstest:
 		if rank == 0:
-			print("Performing K-S test and outlier removal...")
+			print('Performing outlier removal via K-S test...')
 
 		mask = transform_kstest(X, colnames, keepna=args.ks_keepna, threshold=args.ks_threshold, logfile=args.ks_log)
 
 		# remove outliers from FPKM matrix
 		if rank == 0:
-			print("Preserved %d / %d samples after outlier removal..." % (sum(mask), len(mask)))
+			print('Preserved %d / %d samples after outlier removal...' % (sum(mask), len(mask)))
 
 			X = X[:, mask]
 			colnames = colnames[mask]
@@ -176,13 +184,13 @@ if __name__ == "__main__":
 	# perform quantile normalization
 	if args.quantile:
 		if rank == 0:
-			print("Performing quantile normalization...")
+			print('Performing quantile normalization...')
 
 		transform_quantile(X, nanmean=args.quantile_nanmean)
 
 	# save output matrix
 	if rank == 0:
-		print("Saving output expression matrix...")
+		print('Saving output expression matrix...')
 
 		emx = pd.DataFrame(X, index=rownames, columns=colnames)
 		utils.save_dataframe(args.outfile, emx)

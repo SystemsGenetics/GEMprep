@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+'''
+Compare various summary statistics of two expression matrices. Useful
+for verifying that two GEMs are identical or for quantifying the
+differences between them.
+'''
 import argparse
 import numpy as np
 import pandas as pd

@@ -1,4 +1,10 @@
 #!/usr/bin/env Rscript
+# Perform any of a series of standard transformations to an
+# expression matrix, including log2 transform, outlier removal
+# via K-S test, and quantile normalization.
+#
+# NOTE: When performing outlier removal on a very large matrix,
+# it is much faster to use normalize.py instead of this script.
 
 # load libraries
 library(preprocessCore)
@@ -49,7 +55,7 @@ if ("--plot-pre" %in% args)
 
 if ("--kstest" %in% args)
 {
-  print("Performing K-S test and outlier removal...")
+  print("Performing outlier removal via K-S test...")
 
   # compute the global sample distribution
   g = emx[, 1]
