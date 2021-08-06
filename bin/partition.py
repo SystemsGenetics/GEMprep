@@ -15,7 +15,7 @@ import utils
 if __name__ == '__main__':
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument('infile', help='input expression matrix')
+	parser.add_argument('infile', help='input expression matrix (genes x samples)')
 	parser.add_argument('outfile', help='output label file')
 	parser.add_argument('--partitions', help='partition label file')
 	parser.add_argument('--n-partitions', help='number of partitions to generate', type=int, default=0)

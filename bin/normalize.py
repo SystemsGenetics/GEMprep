@@ -136,13 +136,13 @@ def transform_quantile(X, nanmean=False):
 if __name__ == '__main__':
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument('infile', help='input expression matrix')
+	parser.add_argument('infile', help='input expression matrix (genes x samples)')
 	parser.add_argument('outfile', help='output expression matrix')
 	parser.add_argument('--log2', help='perform a log2 transform', action='store_true')
 	parser.add_argument('--log2-alpha', help='alpha value in log2 transform: x -> log2(alpha + x)', type=float, default=0)
 	parser.add_argument('--kstest', help='perform outlier removal using the K-S test', action='store_true')
 	parser.add_argument('--ks-log', help='log file of K-S test results')
-	parser.add_argument('--ks-keepna', help='keep nan's during K-S test', action='store_true')
+	parser.add_argument('--ks-keepna', help='keep nan\'s during K-S test', action='store_true')
 	parser.add_argument('--ks-threshold', help='threshold for K-S test', type=float, default=0.15)
 	parser.add_argument('--quantile', help='perform quantile normalization', action='store_true')
 	parser.add_argument('--quantile-nanmean', help='use nanmean during quantile normalization', action='store_true')

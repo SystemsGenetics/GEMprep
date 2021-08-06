@@ -12,8 +12,8 @@ import utils
 if __name__ == '__main__':
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument('infiles', help='Input dataframes', nargs='*')
-	parser.add_argument('outfile', help='Output dataframe')
+	parser.add_argument('infiles', help='input dataframes (genes x samples)', nargs='*')
+	parser.add_argument('outfile', help='output dataframe')
 
 	args = parser.parse_args()
 
