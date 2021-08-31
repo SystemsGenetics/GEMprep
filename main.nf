@@ -5,10 +5,10 @@
 /**
  * Create channel for input files.
  */
-FPKM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input.dir}/${params.input.fpkm_txt}", size: 1, flat: true)
-RAW_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input.dir}/${params.input.raw_txt}", size: 1, flat: true)
-TPM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input.dir}/${params.input.tpm_txt}", size: 1, flat: true)
-EMX_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input.dir}/${params.input.emx_txt}", size: 1, flat: true)
+FPKM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.fpkm_txt}", size: 1, flat: true)
+RAW_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.raw_txt}", size: 1, flat: true)
+TPM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.tpm_txt}", size: 1, flat: true)
+EMX_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.emx_txt}", size: 1, flat: true)
 
 
 
@@ -37,7 +37,7 @@ Channel.empty()
  */
 process convert_txt_npy {
     tag "${dataset}"
-    publishDir "${params.output.dir}/${dataset}"
+    publishDir "${params.output_dir}/${dataset}"
 
     input:
         set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_CONVERT
@@ -46,11 +46,11 @@ process convert_txt_npy {
         set val(dataset), file("*.npy"), file("*.rownames.txt"), file("*.colnames.txt")
 
     when:
-        params.convert_txt_npy.enabled == true
+        params.convert_txt_npy == true
 
     script:
         """
-        convert.py ${input_file} \$(basename ${input_file} .txt).npy
+        convert.py ${input_file} `basename ${input_file} .txt`.npy
         """
 }
 
@@ -59,7 +59,7 @@ process convert_txt_npy {
 /**
  * Make sure that at most one quantile method (R or python) is enabled.
  */
-if ( params.normalize.quantile_py == true && params.normalize.quantile_r == true ) {
+if ( params.normalize_quantile_py == true && params.normalize_quantile_r == true ) {
     error "error: only one quantile method (R or python) should be enabled"
 }
 
@@ -72,7 +72,7 @@ if ( params.normalize.quantile_py == true && params.normalize.quantile_r == true
  */
 process normalize {
     tag "${dataset}"
-    publishDir "${params.output.dir}/${dataset}"
+    publishDir "${params.output_dir}/${dataset}"
 
     input:
         set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_NORMALIZE
@@ -82,21 +82,21 @@ process normalize {
         set val(dataset), file("${dataset}.kstest.txt")
 
     when:
-        params.normalize.enabled == true
+        params.normalize == true
 
     script:
         """
-        mpirun -np ${params.normalize.np} normalize.py \
+        mpirun -np ${params.normalize_np} normalize.py \
             ${input_file} \
             ${dataset}.emx.txt \
-            ${params.normalize.log2 ? "--log2" : ""} \
-            ${params.normalize.kstest ? "--kstest" : ""} \
+            ${params.normalize_log2 ? "--log2" : ""} \
+            ${params.normalize_kstest ? "--kstest" : ""} \
             --ks-log ${dataset}.kstest.txt \
-            ${params.normalize.quantile_py ? "--quantile" : ""}
+            ${params.normalize_quantile_py ? "--quantile" : ""}
 
-        if [[ ${params.normalize.quantile_r} == true ]]; then
+        if [[ ${params.normalize_quantile_r} == true ]]; then
             mv ${dataset}.emx.txt FPKM.txt
-            normalize.R --quantile
+            normalize_R --quantile
             mv GEM.txt ${dataset}.emx.txt
         fi
         """
@@ -110,7 +110,7 @@ process normalize {
  */
 process visualize {
     tag "${dataset}"
-    publishDir "${params.output.dir}/${dataset}"
+    publishDir "${params.output_dir}/${dataset}"
 
     input:
         set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_VISUALIZE
@@ -119,16 +119,16 @@ process visualize {
         set val(dataset), file("*.png")
 
     when:
-        params.visualize.enabled == true
+        params.visualize == true
 
     script:
         """
         visualize.py \
             ${input_file} \
-            ${params.visualize.density ? "--density density.png" : ""} \
-            ${params.visualize.tsne ? "--tsne tsne.png" : ""} \
-            --tsne-na ${params.visualize.tsne_na} \
-            --tsne-npca ${params.visualize.tsne_npca}
+            ${params.visualize_density ? "--density density.png" : ""} \
+            ${params.visualize_tsne ? "--tsne tsne.png" : ""} \
+            --tsne-na ${params.visualize_tsne_na} \
+            --tsne-npca ${params.visualize_tsne_npca}
         """
 }
 
@@ -140,7 +140,7 @@ process visualize {
  */
 process partition {
     tag "${dataset}"
-    publishDir "${params.output.dir}/${dataset}"
+    publishDir "${params.output_dir}/${dataset}"
 
     input:
         set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_PARTITION
@@ -149,14 +149,14 @@ process partition {
         set val(dataset), file("*.txt")
 
     when:
-        params.partition.enabled == true
+        params.partition == true
 
     script:
         """
         partition.py \
             ${input_file} \
             partitions.txt \
-            --n-partitions ${params.partition.num_partitions} \
-            --method ${params.partition.method}
+            --n-partitions ${params.partition_npartitions} \
+            --method ${params.partition_method}
         """
 }

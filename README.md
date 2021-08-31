@@ -10,7 +10,7 @@ The recommended way to use the scripts in this repository is with an Anaconda en
 ```bash
 module load anaconda3/5.1.0-gcc
 
-conda create -n gemprep python=3.6 matplotlib mpi4py numpy pandas r scikit-learn seaborn
+conda env create -f environment.yml
 ```
 
 Once this environment has been created, the R package `preprocessCore` must be seperately installed:
@@ -44,10 +44,10 @@ __NOTE__: For any of the Python scripts described below, you can run the script 
 The primary way to store an expression matrix in a file is as a tab-delimited text file which includes the row names and column names. The same matrix can also be stored as a binary Numpy (`.npy`) file, which includes only the data, and separate text files for the row names and column names. The script `convert.py` can convert expression matrix files between these two formats:
 ```bash
 # convert an expression matrix from plaintext to binary
-python bin/convert.py GEM.txt GEM.npy
+bin/convert.py GEM.txt GEM.npy
 
 # convert the binary matrix back to plaintext
-python bin/convert.py GEM.npy GEM.txt
+bin/convert.py GEM.npy GEM.txt
 ```
 
 Every Python script in this repository can load and save expression matrices using either format, depending on whether you provide `txt` or `npy` file arguments.
@@ -58,12 +58,12 @@ To normalize an expression matrix, there are two scripts, `normalize.py` and `no
 
 To use the `normalize.py` script:
 ```bash
-python bin/normalize.py <infile> <outfile> [options]
+bin/normalize.py <infile> <outfile> [options]
 ```
 
 To use the `normalize.R` script:
 ```bash
-Rscript bin/normalize.R [--log2] [--kstest] [--quantile]
+bin/normalize.R [--log2] [--kstest] [--quantile]
 ```
 
 This script expects an input file called `FPKM.txt` and performs log2 transform, KS test outlier removal, and quantile normalization. It produces a normalized matrix file called `GEM.txt` as well as a log file of the KS test results and several visualizations.
@@ -74,7 +74,7 @@ There is also a script, `normalize-frankenstein.pbs` that combines these two scr
 
 To create visualizations of an expression matrix, use the `visualize.py` script:
 ```bash
-python bin/visualize.py <infile> [options]
+bin/visualize.py <infile> [options]
 ```
 
 This script takes an expression matrix file (which may or may not be normalized) and creates several visualizations based on the command line arguments that you provide. Currently this script supports two visualizations:
@@ -85,8 +85,8 @@ This script takes an expression matrix file (which may or may not be normalized)
 For an unnormalized matrix, the sample distributions will vary greatly, but for a normalized matrix, the samples should have similar distributions. For the t-SNE plot, a label file can be provided to color the data points by their respective label. The file should contain a label for each sample, separated by newlines. The labels can be text or numeric.
 
 For the t-SNE plot, you can also control the display style of each class. Here's an example:
-```
-python bin/visualize.py \
+```bash
+bin/visualize.py \
     tcga.emx.txt \
     --labels tcga.labels.txt \
     --tsne tcga.tsne.png \
@@ -103,10 +103,10 @@ The example above will produce a t-SNE plot of the TCGA dataset which emphasizes
 To partition an expression matrix into several sub-matrices, use the `partition.py` script:
 ```bash
 # use a pre-defined partition file
-python bin/partition.py <infile> --partitions [partition-file]
+bin/partition.py <infile> --partitions [partition-file]
 
 # use an automatic partitioning scheme with N partitions
-python bin/partition.py <infile> --n-partitions N
+bin/partition.py <infile> --n-partitions N
 ```
 
 This script takes an expression matrix and creates several submatrices based on a partitioning scheme. You can either provide a custom partition file or use the script to automatically generate partitions. The partition file should have two columns, the first column being sample names and the second column being partition labels. When generating partitions automatically, the script will output the resulting partition file, which you can modify to create your own partition files. Run with `-h` to see the list of available options.
@@ -115,18 +115,21 @@ This script takes an expression matrix and creates several submatrices based on 
 
 To merge several expression matrices into a single matrix, use the `merge.py` script:
 ```bash
-python bin/merge.py <infiles> <outfile>
+bin/merge.py <infiles> <outfile>
 ```
 
 ### Nextflow Pipeline
 
-The Nextflow pipeline can run several tools on a set of GEM files in a single run using the scripts in the `bin` folder. By default, the pipeline uses all GEM files in the `input` directory, runs all steps that are enabled in `nextflow.config`, and saves all results to the `output` folder. There are several settings, such as the directory to your conda environment and the steps to run, which can be found in the `params` section of `nextflow.config`. These settings can be modified to fit the user's needs.
-
-To run the Nextflow pipeline:
+The Nextflow pipeline provides a wrapper for the Python scripts in this repo and it allows you to chain multiple scripts together. By default, the pipeline loads all GEM files in the `input` directory, runs all the steps that are specified on the command-line, and saves all results to the `output` folder. Refer to the `params` section of `nextflow.config` to see all of the available command-line options. Here is an example usage:
 ```bash
-# place input files in the input directory
+# provide input data
 mkdir input
 # ...
 
-nextflow run main.nf
+# perform multiple GEMprep steps in series
+nextflow run main.nf \
+    -profile <conda|docker|singularity> \
+    --convert_txt_npy \
+    --normalize \
+    --visualize
 ```
