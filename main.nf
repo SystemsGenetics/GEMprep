@@ -16,18 +16,18 @@ EMX_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input.dir}/${params.i
  * Send input files to each process that uses them.
  */
 Channel.empty()
-	.mix(
-		FPKM_TXT_FILES_FROM_INPUT,
-		RAW_TXT_FILES_FROM_INPUT,
-		TPM_TXT_FILES_FROM_INPUT,
-		EMX_TXT_FILES_FROM_INPUT
-	)
-	.into {
-		DATA_TXT_FILES_FOR_CONVERT;
-		DATA_TXT_FILES_FOR_NORMALIZE;
-		DATA_TXT_FILES_FOR_VISUALIZE;
-		DATA_TXT_FILES_FOR_PARTITION
-	}
+    .mix(
+        FPKM_TXT_FILES_FROM_INPUT,
+        RAW_TXT_FILES_FROM_INPUT,
+        TPM_TXT_FILES_FROM_INPUT,
+        EMX_TXT_FILES_FROM_INPUT
+    )
+    .into {
+        DATA_TXT_FILES_FOR_CONVERT;
+        DATA_TXT_FILES_FOR_NORMALIZE;
+        DATA_TXT_FILES_FOR_VISUALIZE;
+        DATA_TXT_FILES_FOR_PARTITION
+    }
 
 
 
@@ -36,22 +36,22 @@ Channel.empty()
  * to binary.
  */
 process convert_txt_npy {
-	tag "${dataset}"
-	publishDir "${params.output.dir}/${dataset}"
+    tag "${dataset}"
+    publishDir "${params.output.dir}/${dataset}"
 
-	input:
-		set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_CONVERT
+    input:
+        set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_CONVERT
 
-	output:
-		set val(dataset), file("*.npy"), file("*.rownames.txt"), file("*.colnames.txt")
+    output:
+        set val(dataset), file("*.npy"), file("*.rownames.txt"), file("*.colnames.txt")
 
-	when:
-		params.convert_txt_npy.enabled == true
+    when:
+        params.convert_txt_npy.enabled == true
 
-	script:
-		"""
-		convert.py ${input_file} \$(basename ${input_file} .txt).npy
-		"""
+    script:
+        """
+        convert.py ${input_file} \$(basename ${input_file} .txt).npy
+        """
 }
 
 
@@ -60,7 +60,7 @@ process convert_txt_npy {
  * Make sure that at most one quantile method (R or python) is enabled.
  */
 if ( params.normalize.quantile_py == true && params.normalize.quantile_r == true ) {
-	error "error: only one quantile method (R or python) should be enabled"
+    error "error: only one quantile method (R or python) should be enabled"
 }
 
 
@@ -71,35 +71,35 @@ if ( params.normalize.quantile_py == true && params.normalize.quantile_r == true
  * which produces a normalized expression matrix.
  */
 process normalize {
-	tag "${dataset}"
-	publishDir "${params.output.dir}/${dataset}"
+    tag "${dataset}"
+    publishDir "${params.output.dir}/${dataset}"
 
-	input:
-		set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_NORMALIZE
+    input:
+        set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_NORMALIZE
 
-	output:
-		set val(dataset), file("${dataset}.emx.txt")
-		set val(dataset), file("${dataset}.kstest.txt")
+    output:
+        set val(dataset), file("${dataset}.emx.txt")
+        set val(dataset), file("${dataset}.kstest.txt")
 
-	when:
-		params.normalize.enabled == true
+    when:
+        params.normalize.enabled == true
 
-	script:
-		"""
-		mpirun -np ${params.normalize.np} normalize.py \
-			${input_file} \
-			${dataset}.emx.txt \
-			${params.normalize.log2 ? "--log2" : ""} \
-			${params.normalize.kstest ? "--kstest" : ""} \
-			--ks-log ${dataset}.kstest.txt \
-			${params.normalize.quantile_py ? "--quantile" : ""}
+    script:
+        """
+        mpirun -np ${params.normalize.np} normalize.py \
+            ${input_file} \
+            ${dataset}.emx.txt \
+            ${params.normalize.log2 ? "--log2" : ""} \
+            ${params.normalize.kstest ? "--kstest" : ""} \
+            --ks-log ${dataset}.kstest.txt \
+            ${params.normalize.quantile_py ? "--quantile" : ""}
 
-		if [[ ${params.normalize.quantile_r} == true ]]; then
-			mv ${dataset}.emx.txt FPKM.txt
-			normalize.R --quantile
-			mv GEM.txt ${dataset}.emx.txt
-		fi
-		"""
+        if [[ ${params.normalize.quantile_r} == true ]]; then
+            mv ${dataset}.emx.txt FPKM.txt
+            normalize.R --quantile
+            mv GEM.txt ${dataset}.emx.txt
+        fi
+        """
 }
 
 
@@ -109,27 +109,27 @@ process normalize {
  * visualizations based on the input configuration.
  */
 process visualize {
-	tag "${dataset}"
-	publishDir "${params.output.dir}/${dataset}"
+    tag "${dataset}"
+    publishDir "${params.output.dir}/${dataset}"
 
-	input:
-		set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_VISUALIZE
+    input:
+        set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_VISUALIZE
 
-	output:
-		set val(dataset), file("*.png")
+    output:
+        set val(dataset), file("*.png")
 
-	when:
-		params.visualize.enabled == true
+    when:
+        params.visualize.enabled == true
 
-	script:
-		"""
-		visualize.py \
-			${input_file} \
-			${params.visualize.density ? "--density density.png" : ""} \
-			${params.visualize.tsne ? "--tsne tsne.png" : ""} \
-			--tsne-na ${params.visualize.tsne_na} \
-			--tsne-npca ${params.visualize.tsne_npca}
-		"""
+    script:
+        """
+        visualize.py \
+            ${input_file} \
+            ${params.visualize.density ? "--density density.png" : ""} \
+            ${params.visualize.tsne ? "--tsne tsne.png" : ""} \
+            --tsne-na ${params.visualize.tsne_na} \
+            --tsne-npca ${params.visualize.tsne_npca}
+        """
 }
 
 
@@ -139,24 +139,24 @@ process visualize {
  * sub-matrices based on a partitioning scheme.
  */
 process partition {
-	tag "${dataset}"
-	publishDir "${params.output.dir}/${dataset}"
+    tag "${dataset}"
+    publishDir "${params.output.dir}/${dataset}"
 
-	input:
-		set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_PARTITION
+    input:
+        set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_PARTITION
 
-	output:
-		set val(dataset), file("*.txt")
+    output:
+        set val(dataset), file("*.txt")
 
-	when:
-		params.partition.enabled == true
+    when:
+        params.partition.enabled == true
 
-	script:
-		"""
-		partition.py \
-			${input_file} \
-			partitions.txt \
-			--n-partitions ${params.partition.num_partitions} \
-			--method ${params.partition.method}
-		"""
+    script:
+        """
+        partition.py \
+            ${input_file} \
+            partitions.txt \
+            --n-partitions ${params.partition.num_partitions} \
+            --method ${params.partition.method}
+        """
 }
