@@ -26,7 +26,7 @@ def plot_density(X, filename, xmin=None, xmax=None):
 		xmax = np.nanmax(X)
 
 	# plot the KDE of each sample
-	_, ax = plt.subplots(figsize=(10, 10))
+	fig, ax = plt.figure()
 
 	for idx in X.index:
 		X_i = X.loc[idx].dropna()

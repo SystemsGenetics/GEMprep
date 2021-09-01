@@ -6,24 +6,16 @@ This repository contains a variety of tools for gene expression matrices (GEMs).
 
 ## Dependencies
 
-The recommended way to use the scripts in this repository is with an Anaconda environment. To create an Anaconda environment:
+The recommended way to use the scripts in this repository is with an Anaconda environment:
 ```bash
 module load anaconda3/5.1.0-gcc
 
+# create Anaconda environment
 conda env create -f environment.yml
-```
 
-Once this environment has been created, the R package `preprocessCore` must be seperately installed:
-
-```bash
+# install R dependencies
 source activate gemprep
-
-# open a shell in R
-R
-
-> install.packages("BiocManager")
-> BiocManager::install()
-> BiocManager::install(c("preprocessCore"))
+scripts/install-deps.R
 ```
 
 To use the Nextflow pipeline, you must first install Nextflow:
@@ -120,13 +112,13 @@ bin/merge.py <infiles> <outfile>
 
 ### Nextflow Pipeline
 
-The Nextflow pipeline provides a wrapper for the Python scripts in this repo and it allows you to chain multiple scripts together. By default, the pipeline loads all GEM files in the `input` directory, runs all the steps that are specified on the command-line, and saves all results to the `output` folder. Refer to the `params` section of `nextflow.config` to see all of the available command-line options. Here is an example usage:
+The Nextflow pipeline provides a wrapper for the Python scripts in this repo and it allows you to perform multiple steps at once. By default, the pipeline loads all GEM files in the `input` directory, runs all the steps that are specified on the command-line, and saves all results to the `output` folder. Refer to the `params` section of `nextflow.config` to see all of the available command-line options. Here is an example usage:
 ```bash
 # provide input data
 mkdir input
 # ...
 
-# perform multiple GEMprep steps in series
+# perform multiple GEMprep steps
 nextflow run main.nf \
     -profile <conda|docker|singularity> \
     --convert_txt_npy \
