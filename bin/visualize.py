@@ -28,9 +28,9 @@ def plot_density(X, filename, xmin=None, xmax=None):
 	# plot the KDE of each sample
 	_, ax = plt.subplots(figsize=(10, 10))
 
-	for colname in X.columns:
-		X_i = X[colname].dropna()
-		sns.distplot(X_i, hist=False, ax=ax)
+	for idx in X.index:
+		X_i = X.loc[idx].dropna()
+		sns.kdeplot(X_i, ax=ax)
 
 	plt.title('Sample Distributions')
 	plt.xlabel('Expression Level')
@@ -52,7 +52,6 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, classes=None, sizes=N
 	# perform PCA for dimensionality reduction
 	print('  Computing PCA decomposition...')
 
-	X = X.T
 	X_pca = sklearn.decomposition.PCA(n_components=n_pca, copy=False).fit_transform(X)
 
 	# compute t-SNE from the PCA projection
@@ -93,7 +92,7 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, classes=None, sizes=N
 		plt.colorbar()
 
 	# save figure to file
-	plt.savefig(filename, dpi=600)
+	plt.savefig(filename)
 	plt.close()
 
 
@@ -101,7 +100,7 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, classes=None, sizes=N
 if __name__ == '__main__':
 	# parse command-line arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument('infile', help='input expression matrix (genes x samples)')
+	parser.add_argument('infile', help='input expression matrix (samples x genes)')
 	parser.add_argument('--labels', help='text file of sample labels')
 	parser.add_argument('--density', help='save density plot to the given filename')
 	parser.add_argument('--density-xmax', help='upper bound of x-axis', type=float)
@@ -124,9 +123,9 @@ if __name__ == '__main__':
 	if args.labels != None:
 		print('Loading label file...')
 
-		labels = np.loadtxt(args.labels, dtype=str)
+		labels = utils.load_labels(args.labels)
 	else:
-		labels = np.zeros(len(emx.columns), dtype=str)
+		labels = np.zeros(len(emx.index), dtype=str)
 
 	# plot sample distributions
 	if args.density != None:

@@ -37,7 +37,7 @@ Or refer to the [pbs-toolkit](https://github.com/bentsherman/pbs-toolkit) reposi
 
 ## Usage
 
-__NOTE__: For any of the Python scripts described below, you can run the script with the `-h` option to see all of the available options.
+For any of the Python scripts described below, you can run the script with the `-h` option to see all of the available options. Be sure to check that your GEM file matches the structure expected by a script before running the script. Some scripts expect (genes x samples) and some expect (samples x genes).
 
 ### Plaintext and Binary formats (convert.py)
 

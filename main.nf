@@ -9,6 +9,7 @@ FPKM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.
 RAW_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.raw_txt}", size: 1, flat: true)
 TPM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.tpm_txt}", size: 1, flat: true)
 EMX_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.emx_txt}", size: 1, flat: true)
+LABELS_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.labels_txt}", size: 1, flat: true)
 
 
 
@@ -113,7 +114,8 @@ process visualize {
     publishDir "${params.output_dir}/${dataset}"
 
     input:
-        set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_VISUALIZE
+        set val(dataset), file(data_file) from DATA_TXT_FILES_FOR_VISUALIZE
+        set val(dataset), file(labels_file) from LABELS_TXT_FILES_FROM_INPUT
 
     output:
         set val(dataset), file("*.png")
@@ -124,7 +126,8 @@ process visualize {
     script:
         """
         visualize.py \
-            ${input_file} \
+            ${data_file} \
+            --labels ${labels_file} \
             ${params.visualize_density ? "--density density.png" : ""} \
             ${params.visualize_tsne ? "--tsne tsne.png" : ""} \
             --tsne-na ${params.visualize_tsne_na} \

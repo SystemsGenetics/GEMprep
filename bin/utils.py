@@ -49,3 +49,11 @@ def save_dataframe(filename, df):
 	else:
 		print('error: filename %s is invalid' % (filename))
 		sys.exit(-1)
+
+
+
+def load_labels(filename):
+    labels = pd.read_csv(filename, sep='\t', header=None, index_col=0)
+    labels = labels[1].values
+
+    return labels
