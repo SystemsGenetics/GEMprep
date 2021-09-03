@@ -5,6 +5,9 @@ Create any of the following visualizations for an expression matrix:
 - Density plot of expression values in each sample
 - t-SNE plot of samples
 '''
+import matplotlib
+matplotlib.use('Agg')
+
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
@@ -121,11 +124,11 @@ if __name__ == '__main__':
 
 	# load label file or generate empty labels
 	if args.labels != None:
-		print('Loading label file...')
-
 		labels = utils.load_labels(args.labels)
 	else:
 		labels = np.zeros(len(emx.index), dtype=str)
+
+	print('Loaded %s %s' % ('labels', str(labels.shape)))
 
 	# plot sample distributions
 	if args.density != None:
