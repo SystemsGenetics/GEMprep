@@ -1,34 +1,49 @@
 #!/usr/bin/env nextflow
 
-
-
-/**
- * Create channel for input files.
- */
-FPKM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.fpkm_txt}", size: 1, flat: true)
-RAW_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.raw_txt}", size: 1, flat: true)
-TPM_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.tpm_txt}", size: 1, flat: true)
-EMX_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.emx_txt}", size: 1, flat: true)
-LABELS_TXT_FILES_FROM_INPUT = Channel.fromFilePairs("${params.input_dir}/${params.labels_txt}", size: 1, flat: true)
+nextflow.enable.dsl=2
 
 
 
-/**
- * Send input files to each process that uses them.
- */
-Channel.empty()
-    .mix(
-        FPKM_TXT_FILES_FROM_INPUT,
-        RAW_TXT_FILES_FROM_INPUT,
-        TPM_TXT_FILES_FROM_INPUT,
-        EMX_TXT_FILES_FROM_INPUT
+workflow {
+    // load input files
+    fpkm_txt_files = Channel.fromFilePairs("${params.input_dir}/${params.fpkm_txt}", size: 1, flat: true)
+    raw_txt_files  = Channel.fromFilePairs("${params.input_dir}/${params.raw_txt}", size: 1, flat: true)
+    tpm_txt_files  = Channel.fromFilePairs("${params.input_dir}/${params.tpm_txt}", size: 1, flat: true)
+    emx_txt_files  = Channel.fromFilePairs("${params.input_dir}/${params.emx_txt}", size: 1, flat: true)
+    labels_files   = Channel.fromFilePairs("${params.input_dir}/${params.labels_txt}", size: 1, flat: true)
+
+    data_txt_files = Channel.empty().mix(
+        fpkm_txt_files,
+        raw_txt_files,
+        tpm_txt_files,
+        emx_txt_files
     )
-    .into {
-        DATA_TXT_FILES_FOR_CONVERT;
-        DATA_TXT_FILES_FOR_NORMALIZE;
-        DATA_TXT_FILES_FOR_VISUALIZE;
-        DATA_TXT_FILES_FOR_PARTITION
+
+    // run convert if specified
+    if ( params.convert_txt_npy == true ) {
+        convert_txt_npy(data_txt_files)
     }
+
+    // make sure that at most one quantile method (R or python) is enabled
+    if ( params.normalize_quantile_py == true && params.normalize_quantile_r == true ) {
+        error "error: only one quantile method (R or python) should be enabled"
+    }
+
+    // run normalize if specified
+    if ( params.normalize == true ) {
+        normalize(data_txt_files)
+    }
+
+    // run visualize if specified
+    if ( params.visualize == true ) {
+        visualize(data_txt_files, labels_files)
+    }
+
+    // run partition if specified
+    if ( params.partition == true ) {
+        partition(data_txt_files)
+    }
+}
 
 
 
@@ -41,27 +56,15 @@ process convert_txt_npy {
     publishDir "${params.output_dir}/${dataset}"
 
     input:
-        set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_CONVERT
+        tuple val(dataset), path(input_file)
 
     output:
-        set val(dataset), file("*.npy"), file("*.rownames.txt"), file("*.colnames.txt")
-
-    when:
-        params.convert_txt_npy == true
+        tuple val(dataset), path("*.npy"), path("*.rownames.txt"), path("*.colnames.txt")
 
     script:
         """
         convert.py ${input_file} `basename ${input_file} .txt`.npy
         """
-}
-
-
-
-/**
- * Make sure that at most one quantile method (R or python) is enabled.
- */
-if ( params.normalize_quantile_py == true && params.normalize_quantile_r == true ) {
-    error "error: only one quantile method (R or python) should be enabled"
 }
 
 
@@ -76,14 +79,11 @@ process normalize {
     publishDir "${params.output_dir}/${dataset}"
 
     input:
-        set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_NORMALIZE
+        tuple val(dataset), path(input_file)
 
     output:
-        set val(dataset), file("${dataset}.emx.txt")
-        set val(dataset), file("${dataset}.kstest.txt")
-
-    when:
-        params.normalize == true
+        tuple val(dataset), path("${dataset}.emx.txt")
+        tuple val(dataset), path("${dataset}.kstest.txt")
 
     script:
         """
@@ -114,14 +114,11 @@ process visualize {
     publishDir "${params.output_dir}/${dataset}"
 
     input:
-        set val(dataset), file(data_file) from DATA_TXT_FILES_FOR_VISUALIZE
-        set val(dataset), file(labels_file) from LABELS_TXT_FILES_FROM_INPUT
+        tuple val(dataset), path(data_file)
+        tuple val(dataset), path(labels_file)
 
     output:
-        set val(dataset), file("*.png")
-
-    when:
-        params.visualize == true
+        tuple val(dataset), path("*.png")
 
     script:
         """
@@ -146,13 +143,10 @@ process partition {
     publishDir "${params.output_dir}/${dataset}"
 
     input:
-        set val(dataset), file(input_file) from DATA_TXT_FILES_FOR_PARTITION
+        tuple val(dataset), path(input_file)
 
     output:
-        set val(dataset), file("*.txt")
-
-    when:
-        params.partition == true
+        tuple val(dataset), path("*.txt")
 
     script:
         """
