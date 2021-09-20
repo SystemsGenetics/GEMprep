@@ -53,6 +53,19 @@ def plot_density(
 
 
 
+def broadcast(values, default=None, n_values=1):
+	# apply default value
+	if values == None:
+		values = [default]
+
+	# broadcast single value to list
+	if len(values) == 1:
+		values = [values[0] for _ in range(n_values)]
+
+	return values
+
+
+
 def plot_tsne(
 	X, y,
 	filename,
@@ -85,24 +98,17 @@ def plot_tsne(
 		if classes == None:
 			classes = list(set(y))
 
-		# use default marker size for all classes if not specified
-		if sizes == None:
-			sizes = [20 for c in classes]
-
-		# use default color palette if not specified
-		if colors == None:
-			colors = [None for c in classes]
-
-		# use default alpha values if not specified
-		if alphas == None:
-			alphas = [1.0 for c in classes]
+		# apply defaults to marker size, color, alpha
+		sizes =  broadcast(sizes,  default=20,   n_values=len(classes))
+		colors = broadcast(colors, default=None, n_values=len(classes))
+		alphas = broadcast(alphas, default=1.0,  n_values=len(classes))
 
 		# plot each class with its own display parameters
-		for label, s, color, alpha in zip(classes, sizes, colors, alphas):
+		for label, s, c, alpha in zip(classes, sizes, colors, alphas):
 			plt.scatter(
 				X_tsne[y == label, 0],
 				X_tsne[y == label, 1],
-				s=s, c=color, marker='o', alpha=alpha, edgecolors='w', label=label)
+				s=s, c=c, marker='o', alpha=alpha, edgecolors='w', label=label)
 
 		# plot legend
 		plt.subplots_adjust(right=0.70)

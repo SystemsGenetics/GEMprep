@@ -88,7 +88,7 @@ bin/visualize.py \
     --tsne-alphas 0.5 1.0 0.5 0.5 0.5
 ```
 
-The example above will produce a t-SNE plot of the TCGA dataset which emphasizes the GBM (glioblastoma) class by making the GBM samples larger and suppressing the alpha values of the other classes. You can specify or not specify any of these four options -- default values will be provided for those that you don't specify -- and you can use any of the [named colors supported by matplotlib](https://matplotlib.org/3.2.2/gallery/color/named_colors.html). The only constraint is that each option must provide as many values as there are classes. Additionally, the `--tsne-classes` option must match the class names in the labels file but it allows you to specify a particular order.
+The example above will produce a t-SNE plot of the TCGA dataset which emphasizes the GBM (glioblastoma) class by making the GBM samples larger and suppressing the alpha values of the other classes. You can specify or not specify any of these four options -- default values will be provided for those that you don't specify -- and you can use any of the [named colors supported by matplotlib](https://matplotlib.org/3.2.2/gallery/color/named_colors.html). You must provide as many values as there are classes, or if you provide one value it will be applied to all classes. Additionally, the `--tsne-classes` option must match the class names in the labels file but it allows you to specify a particular order.
 
 ### Splitting (partition.py)
 
