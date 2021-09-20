@@ -156,7 +156,7 @@ if __name__ == '__main__':
 	emx = utils.load_dataframe(args.infile)
 
 	# decompose dataframe into data, row names, and column names
-	X = emx.values
+	X = emx.to_numpy()
 	rownames = emx.index
 	colnames = emx.columns
 

@@ -20,7 +20,12 @@ import utils
 
 
 
-def plot_density(X, filename, xmin=None, xmax=None):
+def plot_density(
+	X,
+	filename,
+	xmin=None,
+	xmax=None):
+
 	# compute x-axis limits if not provided
 	if xmin == None:
 		xmin = np.nanmin(X)
@@ -48,7 +53,16 @@ def plot_density(X, filename, xmin=None, xmax=None):
 
 
 
-def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, classes=None, sizes=None, colors=None, alphas=None):
+def plot_tsne(
+	X, y,
+	filename,
+	na_value=np.nan,
+	n_pca=None,
+	classes=None,
+	sizes=None,
+	colors=None,
+	alphas=None):
+
 	# fill missing values with a representative value
 	X = X.fillna(na_value)
 
@@ -90,17 +104,23 @@ def plot_tsne(X, y, filename, na_value=np.nan, n_pca=None, classes=None, sizes=N
 				X_tsne[y == label, 1],
 				s=s, c=color, marker='o', alpha=alpha, edgecolors='w', label=label)
 
-		plt.legend()
+		# plot legend
+		plt.subplots_adjust(right=0.70)
+		plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
 
 	# use colorbar if y is continuous
 	else:
+		# plot data
 		plt.scatter(
 			X_tsne[:, 0],
 			X_tsne[:, 1],
 			s=20, c=y, edgecolors='w')
+
+		# plot colorbar
 		plt.colorbar()
 
 	# save figure to file
+	plt.tight_layout()
 	plt.savefig(filename)
 	plt.close()
 

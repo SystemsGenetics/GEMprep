@@ -29,7 +29,7 @@ Or refer to the [pbs-toolkit](https://github.com/bentsherman/pbs-toolkit) reposi
 
 ## Usage
 
-For any of the Python scripts described below, you can run the script with the `-h` option to see all of the available options. Be sure to check that your GEM file matches the structure expected by a script before running the script. Some scripts expect (genes x samples) and some expect (samples x genes).
+For any of the Python scripts described below, you can run the script with the `-h` option to see all of the available options. Be sure to check that your GEM file matches the structure expected by a script before running the script. Some scripts expect (genes x samples) and some expect (samples x genes). Where applicable, the labels file should be a tab-delimited text file with at least two columns, the first being the sample names and the second being the labels.
 
 ### Plaintext and Binary formats (convert.py)
 

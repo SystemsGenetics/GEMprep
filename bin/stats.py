@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
 	# load input data
 	emx = utils.load_dataframe(args.infile)
-	emx = emx.values
+	emx = emx.to_numpy()
 
 	# print global stats
 	print('shape: %s' % str(emx.shape))

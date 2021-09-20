@@ -28,8 +28,8 @@ if __name__ == '__main__':
 	print('Loaded %s %s' % (args.emx_test, str(emx_test.shape)))
 
 	# extract data matrix from each dataframe
-	X_true = emx_true.values
-	X_test = emx_test.values
+	X_true = emx_true.to_numpy()
+	X_test = emx_test.to_numpy()
 
 	# print warnings for various mismatches
 	if emx_true.shape != emx_test.shape:
