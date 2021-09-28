@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-MAINTAINER Ben Shealy <btsheal@g.clemson.edu>
+MAINTAINER Ben Shealy <btsheal@clemson.edu>
 
 # install dependencies
 ENV DEBIAN_FRONTEND=noninteractive
