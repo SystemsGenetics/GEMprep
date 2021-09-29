@@ -36,7 +36,9 @@ workflow {
 
     // run visualize if specified
     if ( params.visualize == true ) {
-        visualize(data_txt_files, labels_files)
+        inputs = data_txt_files.join(labels_files)
+
+        visualize(inputs)
     }
 
     // run partition if specified
@@ -114,8 +116,7 @@ process visualize {
     publishDir "${params.output_dir}/${dataset}"
 
     input:
-        tuple val(dataset), path(data_file)
-        tuple val(dataset), path(labels_file)
+        tuple val(dataset), path(data_file), path(labels_file)
 
     output:
         tuple val(dataset), path("*.png")
